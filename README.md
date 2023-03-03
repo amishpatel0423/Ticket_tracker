@@ -11,6 +11,25 @@ By Nicholas Bolen (#200455709),
 5. `npm ci` *(installs packages)*
 6. `node app.js` *(starts app)*
 
+## Linter
+
+*Automatic code formatting*
+
+1. Install [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+2. File > Preferences > Settings (<kbd>Ctrl</kbd> + <kbd>,</kbd> / <kbd>Cmd</kbd> + <kbd>,</kbd>)
+3. Search for "Code Actions On Save"
+4. Edit in `settings.json`
+5. Add the following entries:
+```
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": [
+        "javascript"
+    ]
+```
+Code should now be automatically formatted on file save
+
 ## Git
 
 *There are GUI buttons/extensions available, and VSCode "source control" panel is useful for viewing, staging, commiting, and pushing changes*

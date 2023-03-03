@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+      "module": "Node16",
+      "jsx": "preserve",
+      "checkJs": true
+    },
+    "exclude": ["node_modules", "**/node_modules/*"]
+  }

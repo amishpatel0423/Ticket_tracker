@@ -9,7 +9,7 @@ By Nicholas Bolen (#200455709),
 3. Open folder in VSCode
 4. Open terminal (<kbd>Ctrl</kbd> + <kbd>\`</kbd> / <kbd>Cmd</kbd> + <kbd>\`</kbd>)
 5. `npm ci` *(installs packages)*
-6. `node app.js` *(starts app)*
+6. `npm start` *(starts app)*
 
 ## Linter
 

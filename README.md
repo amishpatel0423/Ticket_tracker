@@ -34,6 +34,13 @@ Code should now be automatically formatted on file save
 
 *There are GUI buttons/extensions available, and VSCode "source control" panel is useful for viewing, staging, commiting, and pushing changes*
 
+To configure Git to stash changes & rebase when you pull, run the following commands once (I recommend this on first time setup):
+
+```
+git config pull.rebase true
+git config rebase.autoStash true
+```
+
 `git fetch` - check if there are updates available\
 `git pull` - download updates\
 `git add file.txt` - stage changes made to `file.txt` (if changes are staged, that means they will be part of the next commit)\

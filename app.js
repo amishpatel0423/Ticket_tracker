@@ -1,3 +1,4 @@
+// @ts-ignore
 import {} from 'dotenv/config';
 import mongoose from 'mongoose';
 import { dirname } from 'path';
@@ -19,6 +20,10 @@ const port = 3000;
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname+ '/index.html');
+});
+
+app.get('/profile', (req, res) => {
+	res.sendFile(__dirname+ '/profile.html');
 });
 
 main().catch(err => console.log(err));

@@ -1,11 +1,25 @@
 import {} from 'dotenv/config';
 import mongoose from 'mongoose';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import { Department } from './schemas/schemas.js';
 
 var msg = 'Hello World!';
 console.log(msg);
 
 const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/?retryWrites=true&w=majority`;
+
+import express from 'express';
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+	res.sendFile(__dirname+ '/index.html');
+});
 
 main().catch(err => console.log(err));
 
@@ -24,3 +38,4 @@ async function main() {
 	console.log(departments);
 }
 
+app.listen(port);

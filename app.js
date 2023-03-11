@@ -18,6 +18,10 @@ import express from 'express';
 const app = express();
 const port = 3000;
 
+
+
+app.use(express.static(__dirname+  '/Signin'));
+
 app.get('/', (req, res) => {
 	res.sendFile(__dirname+ '/index.html');
 });
@@ -25,6 +29,7 @@ app.get('/', (req, res) => {
 app.get('/login',(req,res)=>{
 	res.sendFile(__dirname+ '/Signin/signin.html');
 });
+
 
 main().catch(err => console.log(err));
 

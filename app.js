@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
 	res.sendFile(__dirname+ '/index.html');
 });
 
-app.get('/profile', (req, res) => {
-	res.sendFile(__dirname+ '/profile.html');
+app.get('/login',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/signin.html');
 });
 
 main().catch(err => console.log(err));

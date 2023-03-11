@@ -29,6 +29,14 @@ app.get('/login',(req,res)=>{
 	res.sendFile(__dirname+ '/Signin/signin.html');
 });
 
+app.get('/create',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/createticket.html');
+});
+
+app.get('/signup',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/Signup.html');
+});
+
 
 main().catch(err => console.log(err));
 

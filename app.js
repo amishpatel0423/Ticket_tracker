@@ -38,6 +38,10 @@ app.get('/signup',(req,res)=>{
 	res.sendFile(__dirname+ '/Signin/Signup.html');
 });
 
+app.get('/dashboard',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/dashboard.html');
+});
+
 
 main().catch(err => console.log(err));
 

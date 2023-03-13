@@ -42,6 +42,11 @@ app.get('/dashboard',(req,res)=>{
 	res.sendFile(__dirname+ '/Signin/dashboard.html');
 });
 
+app.get('/profile',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/profile.html');
+});
+
+
 
 main().catch(err => console.log(err));
 

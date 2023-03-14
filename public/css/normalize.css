@@ -374,13 +374,18 @@ table,th,td{
 
 }
 
-.profile {
-  display: flex;
-  flex-wrap: wrap;
+
+
+
+.profile{
+  text-align: center;
+  color: white;
 }
 
-.profile-picture, .name {
-  flex: 1;
-  min-width: 0; /* to prevent overflow when content is wider than the container */
-  padding: 20px;
+.name{
+  color: white;
+}
+
+th.nam {
+  padding: 50 px;
 }

@@ -265,6 +265,32 @@ body {
   -ms-flex-align: center;
   align-items: center;
 }
+.search-input {
+  width: 200px;
+  height: 44px;
+  margin-bottom: 0px;
+  border-radius: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+.search-icon {
+  position: absolute;
+  left: auto;
+  top: auto;
+  right: 12px;
+  bottom: auto;
+  width: 16px;
+  opacity: 0.8;
+}
+.search-button {
+  width: 90px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #da6f21;
+}
+
+.search-button._2 {
+  display: none;
+}
 
 .utility-page-wrap {
   display: -webkit-box;
@@ -789,6 +815,19 @@ body {
 
   .container-2 {
     max-width: none;
+  }
+  .search {
+    width: 100%;
+  }
+  .search-input {
+    width: 100%;
+  }
+
+  .search.saved-shortlists {
+    width: 100%;
+    max-width: 380px;
+    margin-right: 0px;
+    margin-bottom: 20px;
   }
 
   .footer-form-two {

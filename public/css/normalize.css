@@ -380,12 +380,27 @@ table,th,td{
 .profile{
   text-align: center;
   color: white;
+
 }
 
 .name{
-  color: white;
+
+  display: flex;
+  align-items: center;
+  margin: 100px;
 }
 
-th.nam {
-  padding: 50 px;
+.pic{
+  height: 200px;
+  width: 200px;
+  float: left;;
+  
+}
+
+.nam{
+  color: white;
+  padding-right:100px ;
+  flex: 1;
+
+  
 }

@@ -40,6 +40,10 @@ app.get('/dashboard',(req,res)=>{
 app.get('/profile',(req,res)=>{
 	res.sendFile(__dirname+ '/Signin/profile.html');
 });
+app.get('/profile',(req,res)=>{
+	res.sendFile(__dirname+ '/Signin/ticket.html');
+});
+
 
 // Post requests
 app.post('/signup', (req, res)=>{

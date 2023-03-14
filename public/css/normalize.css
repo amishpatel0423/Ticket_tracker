@@ -371,6 +371,7 @@ table,th,td{
   border: 1px solid white;
   padding: 10px;
   margin: 0 auto;
+  color:white;
 
 }
 
@@ -401,6 +402,14 @@ table,th,td{
   color: white;
   padding-right:100px ;
   flex: 1;
-
-  
 }
+
+.table-heading{
+  color: white;
+  text-align: center;
+}
+
+h1.heading{
+  padding-bottom: 100px;
+}
+

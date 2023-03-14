@@ -41,10 +41,27 @@
       </div>
     </div>
   </div>
+
+  <h1 class="heading">New Ticket</h1>
   <div class="w-container">
+   
     <div class="w-form">
       <form id="email-form" name="email-form" data-name="Email Form" method="get">
-        <h1 class="heading">New Ticket</h1><label for="name" class="field-label">Department</label><input type="text" class="w-input" maxlength="256" name="name" data-name="Name" placeholder="" id="name"><label for="email" class="field-label-2">Subject</label><input type="text" class="w-input" maxlength="256" name="name-2" data-name="Name 2" placeholder="" id="name-2"><label for="email" class="field-label-2">Enter the details</label><textarea placeholder="Example Text" maxlength="5000" id="field" name="field" data-name="Field" class="w-input"></textarea><input type="submit" value="Submit" data-wait="Please wait..." class="submit-button-2 w-button"><input type="submit" value="Cancel" data-wait="Please wait..." class="submit-button w-button">
+        
+        
+        
+        <label for="departments" class="field-label-2">Select Department:</label>
+	        <select name="departments" id="departments">
+		      <option value="it">I.T.</option>
+		      <option value="hr">Human Resources</option>
+		      <option value="finance">Finance</option>
+		      <option value="management">Management</option>
+	      </select>
+        <label for="email" class="field-label-2">Subject</label><input type="text" class="w-input" maxlength="256" name="name-2" data-name="Name 2" placeholder="" id="name-2">
+        <label for="email" class="field-label-2">Enter the details</label><textarea placeholder="Example Text" maxlength="5000" id="field" name="field" data-name="Field" class="w-input">
+
+        </textarea><input type="submit" value="Submit" data-wait="Please wait..." class="submit-button-2 w-button">
+        <input type="submit" value="Cancel" data-wait="Please wait..." class="submit-button w-button">
       </form>
       <div class="w-form-done">
         <div>Thank you! Your submission has been received!</div>

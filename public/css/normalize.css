@@ -363,6 +363,7 @@ th {
 .tickets{
   color: white;
   align-content: center;
+  text-align: center;
 
 }
 
@@ -371,4 +372,15 @@ table,th,td{
   padding: 10px;
   margin: 0 auto;
 
+}
+
+.profile {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.profile-picture, .name {
+  flex: 1;
+  min-width: 0; /* to prevent overflow when content is wider than the container */
+  padding: 20px;
 }

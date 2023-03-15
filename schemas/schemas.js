@@ -1,25 +1,13 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const departmentSchema = new Schema({
-	id: {
-		type: String,
-		required: true,
-		unique: true
-	},
 	name: {
 		type: String,
 		required: true
-	},
-	description: String,
-	image: String
+	}
 });
 
 const ticketSchema = new Schema({
-	id: {
-		type: String,
-		required: true,
-		unique: true
-	},
 	title: String,
 	desc: String,
 	date: {
@@ -27,8 +15,14 @@ const ticketSchema = new Schema({
 		default: Date.now(),
 		required: true
 	},
-	dep_id: String,
-	assignee_ids: [String],
+	department_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'Department'
+	},
+	assignee_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User'
+	},
 	state: {
 		type: String,
 		enum: ['Pending', 'Closed', 'In Progress', 'Complete'],
@@ -38,33 +32,46 @@ const ticketSchema = new Schema({
 });
 
 const userSchema = new Schema({
-	id: {
+	email: {
 		type: String,
 		required: true,
 		unique: true
 	},
-	username: String,
+	name: {
+		type: String,
+		required: true
+	},
+	password: {
+		type: String,
+		required: true
+	},
 	avatar: String,
 	date: {
 		type: Date,
 		default: Date.now(),
 		required: true
 	},
-	dep_id: [String],
+	department_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'Department'
+	},
 	permission_level: {
 		type: String,
-		enum: ['User', 'Manager', 'Admin']
+		enum: ['User', 'Manager', 'Admin'],
+		required: true
 	}
 });
 
 const customerSchema = new Schema({
-	id: {
+	name: {
+		type: String,
+		required: true,
+	},
+	email: {
 		type: String,
 		required: true,
 		unique: true
 	},
-	name: String,
-	email: String,
 	date: {
 		type: Date,
 		default: Date.now(),
@@ -73,15 +80,20 @@ const customerSchema = new Schema({
 });
 
 const commentSchema = new Schema({
-	id: {
-		type: String,
-		required: true,
-		unique: true
+	user_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
+		required: true
 	},
-	user_id: String,
-	ticket_id: String,
-	reply_id: String,
-	text: String,
+	ticket_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'Ticket',
+		required: true
+	},
+	text: {
+		type: String,
+		required: true
+	},
 	date: {
 		type: Date,
 		default: Date.now(),

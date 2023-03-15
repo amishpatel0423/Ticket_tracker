@@ -3,7 +3,8 @@ import mongoose, { model, Schema } from 'mongoose';
 const departmentSchema = new Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	}
 });
 

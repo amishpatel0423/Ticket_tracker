@@ -3,19 +3,19 @@ import {} from 'dotenv/config';
 import mongoose from 'mongoose';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { User } from './schemas/schemas.js';
+import { Department, Ticket, User } from './schemas/schemas.js';
 import express from 'express';
 
 // Connect to database
 const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/?retryWrites=true&w=majority`;
-mongoose.connect(uri).then(
+await mongoose.connect(uri).then(
 	// Promise fulfilled
 	() => {
-		console.info('Mongoose connected successfully');
+		console.info('mongoose connected successfully');
 	},
 	// Promise rejected
 	(err) => {
-		console.error('Mongoose failed to connect', err);
+		console.error('mongoose failed to connect:\n', err);
 	}
 );
 
@@ -99,6 +99,48 @@ app.post('/login', (req, res, next) => {
 			}
 			// Account not found
 			next('Invalid credentials');
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+app.post('/ticket/create', (req, res, next) => {
+	const {subject, details, department} = req.body;
+	
+	// Server-side data verification
+	if(subject.length <= 0) throw new Error('invalid subject');
+	if(details.length <= 0) throw new Error('invalid details');
+	if(department.length <= 0) throw new Error('invalid department');
+	
+	// Create account
+	const newTicket = new Ticket({
+		title: subject,
+		desc: details,
+		department_id: department,
+		state: 'Pending'
+	});
+	newTicket.save().then(
+		// Success
+		() => res.redirect('/dashboard'),
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+app.post('/department', (req, res, next) => {
+	// Search for tickets matching filters
+	Department.find(req.body).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			if(doc) {
+				res.send(doc);
+			}
 		},
 		// Fail
 		(err) => {

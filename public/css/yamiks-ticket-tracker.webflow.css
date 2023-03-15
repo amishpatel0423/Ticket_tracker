@@ -1204,7 +1204,7 @@ body {
   max-width: 1400px;
   margin-right: auto;
   margin-left: auto;
-  padding: 60px 40px 220px;
+  padding: 60px 40px;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;

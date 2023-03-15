@@ -30,6 +30,7 @@ app.use(express.static(__dirname + '/public/'));
 app.use(express.static(__dirname + '/Signin/'));
 app.use(express.static(__dirname + '/MyProfile/'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Serve webpasges / GET requests
 app.get('/', (req, res) => {
@@ -139,9 +140,7 @@ app.post('/department', (req, res, next) => {
 		// Success
 		(doc) => {
 			// Send fetched data
-			if(doc) {
-				res.send(doc);
-			}
+			res.send(doc);
 		},
 		// Fail
 		(err) => {
@@ -156,9 +155,24 @@ app.post('/ticket', (req, res, next) => {
 		// Success
 		(doc) => {
 			// Send fetched data
-			if(doc) {
-				res.send(doc);
-			}
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+app.post('/profile', (req, res, next) => {
+	// Search for tickets matching filters
+	console.log(req.body._id);
+	User.find().where('_id').in(req.body._id).then(
+		// Success
+		(doc) => {
+			console.log(doc);
+			// Send fetched data
+			res.send(doc);
 		},
 		// Fail
 		(err) => {

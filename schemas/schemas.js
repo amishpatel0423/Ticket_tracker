@@ -20,6 +20,11 @@ const ticketSchema = new Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'Department'
 	},
+	creator_id: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
+		required: true
+	},
 	assignee_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'User'
@@ -29,6 +34,11 @@ const ticketSchema = new Schema({
 		enum: ['Pending', 'Closed', 'In Progress', 'Complete'],
 		default: 'Pending',
 		required: true
+	},
+	priority: {
+		type: String,
+		enum: ['Low', 'Medium', 'High', ''],
+		default: '',
 	}
 });
 
@@ -63,23 +73,6 @@ const userSchema = new Schema({
 	}
 });
 
-const customerSchema = new Schema({
-	name: {
-		type: String,
-		required: true,
-	},
-	email: {
-		type: String,
-		required: true,
-		unique: true
-	},
-	date: {
-		type: Date,
-		default: Date.now(),
-		required: true
-	},
-});
-
 const commentSchema = new Schema({
 	user_id: {
 		type: mongoose.Types.ObjectId,
@@ -108,5 +101,4 @@ const commentSchema = new Schema({
 export const Department = model('Department', departmentSchema);
 export const Ticket = model('Ticket', ticketSchema);
 export const User = model('User', userSchema);
-export const Customer = model('Customer', customerSchema);
 export const Comment = model('Comment', commentSchema);

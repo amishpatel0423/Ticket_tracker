@@ -375,17 +375,13 @@ table,th,td{
 
 }
 
-
-
-
 .profile{
   text-align: center;
   color: white;
 
 }
 
-.name{
-
+.name1{
   display: flex;
   align-items: center;
   margin: 100px;

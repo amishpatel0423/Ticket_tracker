@@ -28,6 +28,7 @@ const port = 3000;
 // Public HTML/files
 app.use(express.static(__dirname + '/public/'));
 app.use(express.static(__dirname + '/Signin/'));
+app.use(express.static(__dirname + '/MyProfile/'));
 app.use(express.urlencoded({ extended: true }));
 
 // Serve webpasges / GET requests
@@ -44,10 +45,10 @@ app.get('/signup',(req,res)=>{
 	res.sendFile(__dirname + '/Signin/Signup.html');
 });
 app.get('/dashboard',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/dashboard.html');
+	res.sendFile(__dirname + '/MyProfile/dashboard.html');
 });
 app.get('/profile',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/profile.html');
+	res.sendFile(__dirname + '/MyProfile/myprofile.html');
 });
 app.get('/ticket',(req,res)=>{
 	res.sendFile(__dirname + '/Signin/ticket.html');

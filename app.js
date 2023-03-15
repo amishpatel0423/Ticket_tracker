@@ -149,6 +149,23 @@ app.post('/department', (req, res, next) => {
 	);
 });
 
+app.post('/ticket', (req, res, next) => {
+	// Search for tickets matching filters
+	Ticket.find(req.body).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			if(doc) {
+				res.send(doc);
+			}
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 // Start server
 app.listen(port);
 console.log(`running at http://localhost:${port}`);

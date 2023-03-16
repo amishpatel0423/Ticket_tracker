@@ -18,7 +18,11 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 			// For each ticket
 			for (const i in response) {
 				const ticket = response[i];
-				
+
+				let child = document.createElement('div');
+				child.id = `tr-${i}`;
+				select.appendChild(child);
+
 				// Get department by dep id
 				const dep_p = fetch(window.location.origin + '/department', {
 					method: 'POST',
@@ -46,7 +50,6 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 				Promise.all([dep_p, user_p])
 					.then(values => Promise.all(values.map(r => r.json())))
 					.then(values => {
-
 						// Clone template and insert data
 						const clone = template.content.cloneNode(true);
 						clone.getElementById('tick-num').innerHTML = parseInt(i) + 1;
@@ -60,7 +63,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						clone.getElementById('tick-assignee').innerHTML = values[1][0] ? values[1][0].name : ticket.assignee_id || '';
 					
 						// Append newly created row
-						select.appendChild(clone);
+						child.replaceWith(clone);
 					});
 			}
 		});

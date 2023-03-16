@@ -3,7 +3,7 @@
 function login() {
 	const email = document.getElementById('email').value;
 	const upass = document.getElementById('upass').value;
-	console.log(email, upass);
+
 	// Fetch all tickets
 	fetch(window.location.origin + '/login', {
 		method: 'POST',
@@ -16,9 +16,14 @@ function login() {
 			upass: upass
 		})
 	}).then(response => {
-		if(response.status === 401) {
-			document.getElementById('error').style.visibility = 'visible';
+		// Handle errors
+		if(!response.ok) {
+			(response.text()).then(response => {
+				document.getElementById('error-box').style.visibility = 'visible';
+				document.getElementById('error').innerHTML = response;
+			});
 		}
+		// Redirect logged in user
 		else if (response.status === 200) {
 			window.location.href = 'dashboard';
 		}

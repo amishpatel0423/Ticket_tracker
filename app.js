@@ -76,7 +76,7 @@ app.get('/profile',(req,res)=>{
 });
 app.get('/ticket',(req,res)=>{
 	if(req.session.loggedin) {
-		res.sendFile(__dirname + '/Signin/ticket.html');
+		res.sendFile(__dirname + '/TicketDetail page/Ticketdetails.html');
 	}
 	else res.redirect('/login');
 });
@@ -211,7 +211,7 @@ app.post('/ticket', (req, res, next) => {
 
 app.post('/profile', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	
+
 	// Search for tickets matching filters
 	User.find().where('_id').in(req.body._id).then(
 		// Success

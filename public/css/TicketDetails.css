@@ -625,7 +625,6 @@
 
 .nav-link {
   position: static;
-  overflow: scroll;
   margin-right: 5px;
   margin-left: 5px;
   padding: 5px 10px;

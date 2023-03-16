@@ -4,7 +4,7 @@ import {} from 'dotenv/config';
 import mongoose from 'mongoose';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Department, Ticket, User } from './schemas/schemas.js';
+import { Comment, Department, Ticket, User } from './schemas/schemas.js';
 import express from 'express';
 import session from 'express-session';
 
@@ -213,6 +213,27 @@ app.post('/ticket', (req, res, next) => {
 			// Send fetched data
 			res.send(doc);
 		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+// Add comment
+app.post('/ticket/:ticket_id', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!req.params.ticket_id) throw new Error('no ticket ID');
+	if(!req.body.comment) throw new Error('no comment text');
+	
+	const newComment = new Comment({
+		user_id: req.session.user._id,
+		ticket_id: req.params.ticket_id,
+		text: req.body.comment
+	});
+	newComment.save().then(
+		// Success
+		() => res.redirect(`/ticket/${req.params.ticket_id}`),
 		// Fail
 		(err) => {
 			next(err);

@@ -15,6 +15,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 		document.getElementById('prof-pfp');
 		document.getElementById('prof-name').innerHTML = response[0].name;
 		
+		// Adjust user department
 		fetch(window.location.origin + '/department', {
 			method: 'POST',
 			headers: {
@@ -27,6 +28,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 		}).then(response => response.json()).then(response => {
 			document.getElementById('prof-dep').innerHTML = response[0].name;
 		});
+		
 		// Fetch all assigned to and created by user
 		fetch(window.location.origin + '/user-tickets', {
 			method: 'POST',

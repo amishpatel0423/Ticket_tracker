@@ -16,6 +16,11 @@ const ticketSchema = new Schema({
 		default: Date.now(),
 		required: true
 	},
+	updated: {
+		type: Date,
+		default: Date.now(),
+		required: true
+	},
 	department_id: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Department'
@@ -95,9 +100,7 @@ const commentSchema = new Schema({
 		type: Date,
 		default: Date.now(),
 		required: true
-	},
-	edit_date: Date,
-	is_internal: Boolean
+	}
 });
 
 

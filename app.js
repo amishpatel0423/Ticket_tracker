@@ -39,6 +39,7 @@ app.use(express.json()); // Support POST request JSON bodies
 app.use(express.static(__dirname + '/public/'));
 app.use(express.static(__dirname + '/Signin/'));
 app.use(express.static(__dirname + '/MyProfile/'));
+app.use(express.static(__dirname + '/TicketDetail page/'));
 
 // Serve webpasges / GET requests
 app.get('/', (req, res) => {
@@ -53,6 +54,12 @@ app.get('/login',(req,res)=>{
 app.get('/ticket/create',(req,res)=>{
 	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/Signin/createticket.html');
+	}
+	else res.redirect('/login');
+});
+app.get('/ticket/:ticket',(req,res)=>{
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/TicketDetail page/Ticketdetails.html');
 	}
 	else res.redirect('/login');
 });
@@ -216,12 +223,13 @@ app.post('/ticket', (req, res, next) => {
 // Fetch tickets related to user ID
 app.post('/user-tickets', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	
+	console.log(req.body);
 	// Search for tickets matching filters
 	Ticket.find().or([{ creator_id: req.body._id}, {assignee_id: req.body._id }]).then(
 		// Success
 		(doc) => {
 			// Send fetched data
+			console.log(doc);
 			res.send(doc);
 		},
 		// Fail

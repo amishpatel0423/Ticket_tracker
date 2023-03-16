@@ -1,16 +1,44 @@
 // @ts-nocheck
 /* eslint-disable no-undef */
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
-	// Fetch all tickets
-	fetch(window.location.origin + '/ticket', {
+	fetch(window.location.origin + '/profile', {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/json',
 			'Content-Type': 'application/json'
-		}
-	}).then(response => response.json())
-		.then(response => {
-			
+		},
+		body: JSON.stringify({
+			email: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
+		})
+	}).then(response => response.json()).then(response => {
+		// Adjust profile picture and name
+		document.getElementById('prof-pfp');
+		document.getElementById('prof-name').innerHTML = response[0].name;
+		
+		fetch(window.location.origin + '/department', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				_id: response[0].department_id
+			})
+		}).then(response => response.json()).then(response => {
+			document.getElementById('prof-dep').innerHTML = response[0].name;
+		});
+		// Fetch all assigned to and created by user
+		fetch(window.location.origin + '/user-tickets', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				_id: response[0]._id
+			})
+		}).then(response => response.json()).then(response => {
+
 			// Get table row template
 			var template = document.getElementById('ticketrow');
 			var select = document.getElementById('table-row-start');
@@ -35,7 +63,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 					})
 				});
 				// Get name by user id
-				const user_p = fetch(window.location.origin + '/profiles', {
+				const user_p = fetch(window.location.origin + '/profile', {
 					method: 'POST',
 					headers: {
 						'Accept': 'application/json',
@@ -76,4 +104,5 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 					});
 			}
 		});
+	});
 }

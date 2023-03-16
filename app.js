@@ -70,6 +70,12 @@ app.get('/dashboard',(req,res)=>{
 });
 app.get('/profile',(req,res)=>{
 	if(req.session.loggedin) {
+		res.redirect(`/profile/${req.session.user.email}`);
+	}
+	else res.redirect('/login');
+});
+app.get('/profile/:email',(req,res)=>{
+	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/MyProfile/myprofile.html');
 	}
 	else res.redirect('/login');
@@ -82,7 +88,7 @@ app.get('/ticket',(req,res)=>{
 });
 app.get('/logout',(req,res)=>{
 	req.session.loggedin = false;
-	req.session.user_id = undefined;
+	req.session.user = undefined;
 	res.redirect('/login');
 });
 
@@ -128,10 +134,8 @@ app.post('/login', function(req, res, next) {
 			// Account exists
 			if(doc.length > 0) {
 				// Authenticate the user
-				// @ts-ignore
 				req.session.loggedin = true;
-				// @ts-ignore
-				req.session.user_id = doc[0]._id;
+				req.session.user = doc[0];
 				// Redirect to home page
 				res.redirect('/dashboard');
 				res.end();
@@ -162,7 +166,7 @@ app.post('/ticket/create', (req, res, next) => {
 		title: subject,
 		desc: details,
 		department_id: department,
-		creator_id: req.session.user_id,
+		creator_id: req.session.user._id,
 		state: 'Pending'
 	});
 	newTicket.save().then(
@@ -209,11 +213,47 @@ app.post('/ticket', (req, res, next) => {
 	);
 });
 
+// Fetch tickets related to user ID
+app.post('/user-tickets', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	
+	// Search for tickets matching filters
+	Ticket.find().or([{ creator_id: req.body._id}, {assignee_id: req.body._id }]).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+// Fetch profiles given IDs
+app.post('/profiles', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	// Search for users with matching user IDs
+	User.find().where('_id').in(req.body._id).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 app.post('/profile', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 
-	// Search for tickets matching filters
-	User.find().where('_id').in(req.body._id).then(
+	// Search for users matching filters
+	User.find(req.body).then(
 		// Success
 		(doc) => {
 			// Send fetched data

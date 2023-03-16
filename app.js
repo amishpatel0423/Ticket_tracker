@@ -189,7 +189,7 @@ app.post('/ticket/create', (req, res, next) => {
 app.post('/department', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 
-	// Search for tickets matching filters
+	// Search for departments matching filters
 	Department.find(req.body).then(
 		// Success
 		(doc) => {
@@ -203,11 +203,30 @@ app.post('/department', (req, res, next) => {
 	);
 });
 
+// Fetch tickets matching query
 app.post('/ticket', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 
 	// Search for tickets matching filters
 	Ticket.find(req.body).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+// Fetch comments matching query
+app.post('/comment', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	// Search for comments matching filters
+	Comment.find(req.body).then(
 		// Success
 		(doc) => {
 			// Send fetched data
@@ -244,13 +263,12 @@ app.post('/ticket/:ticket_id', (req, res, next) => {
 // Fetch tickets related to user ID
 app.post('/user-tickets', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	console.log(req.body);
+
 	// Search for tickets matching filters
 	Ticket.find().or([{ creator_id: req.body._id}, {assignee_id: req.body._id }]).then(
 		// Success
 		(doc) => {
 			// Send fetched data
-			console.log(doc);
 			res.send(doc);
 		},
 		// Fail
@@ -278,6 +296,7 @@ app.post('/profiles', (req, res, next) => {
 	);
 });
 
+// Fetch profiles matching query
 app.post('/profile', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 

@@ -1,6 +1,7 @@
 // @ts-nocheck
 /* eslint-disable no-undef */
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
+	// Get current ticket
 	fetch(window.location.origin + '/ticket', {
 		method: 'POST',
 		headers: {
@@ -55,18 +56,61 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 				
 				if(values[1][0]) {
 					if(values[1][0]._id === ticket.assignee_id) {
-						clone.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
-						clone.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
+						document.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
+						document.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
 					}
 					else {
-						clone.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
-						clone.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
+						document.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
+						document.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
 					}
 				}
-
-				// Append newly created row
-				child.replaceWith(clone);
 			});
 		
+	});
+	
+	// Get current comments
+	fetch(window.location.origin + '/comment', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			ticket_id: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
+		})
+	}).then(response => response.json()).then(response => {
+		
+		// Get table row template
+		var template = document.getElementById('commentitem');
+		var select = document.getElementById('comment-list');
+
+		// For each comment
+		for (const i in response) {
+			const comment = response[i];
+
+			let child = document.createElement('div');
+			child.id = `tr-${i}`;
+			select.appendChild(child);
+		
+			// Get name from user id
+			fetch(window.location.origin + '/profile', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					_id: comment.user_id
+				})
+			}).then(values => values.json()).then(values =>{
+				//Clone template and insert data
+				const clone = template.content.cloneNode(true);
+				clone.getElementById('comm-name').innerHTML = values[0].name;
+				clone.getElementById('comm-text').innerHTML = comment.text;
+
+				// Apply new row
+				child.replaceWith(clone);
+			});
+		}
 	});
 }

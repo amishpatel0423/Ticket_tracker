@@ -126,20 +126,14 @@
   <section id="comments">
     <h2>Comments</h2>
     <ul id="comment-list">
-      <template>
+      <template id="commentitem">
         <li class="comment">
           <div class="comment-body">
-            <h3 class="comment-author">Yamik Patel</h3>
-            <p class="comment-content">This is my comment.</p>
+            <h3 class="comment-author" id="comm-name"></h3>
+            <p class="comment-content" id="comm-text"></p>
           </div>
         </li>
       </template>
-      <li class="comment">
-        <div class="comment-body">
-          <h3 class="comment-author">Nicholas</h3>
-          <p class="comment-content">This is another comment.</p>
-        </div>
-      </li>
     </ul>
     <h2>Leave a comment</h2>
     <form method="post">

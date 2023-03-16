@@ -71,7 +71,7 @@ const userSchema = new Schema({
 		required: true
 	},
 	department_id: {
-		type: mongoose.Types.ObjectId,
+		type: Schema.Types.ObjectId,
 		ref: 'Department'
 	},
 	permission_level: {
@@ -83,12 +83,12 @@ const userSchema = new Schema({
 
 const commentSchema = new Schema({
 	user_id: {
-		type: mongoose.Types.ObjectId,
+		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: true
 	},
 	ticket_id: {
-		type: mongoose.Types.ObjectId,
+		type: Schema.Types.ObjectId,
 		ref: 'Ticket',
 		required: true
 	},

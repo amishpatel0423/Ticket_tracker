@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-ignore
 import {} from 'dotenv/config';
 import mongoose from 'mongoose';
@@ -5,6 +6,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Department, Ticket, User } from './schemas/schemas.js';
 import express from 'express';
+import session from 'express-session';
 
 // Connect to database
 const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/?retryWrites=true&w=majority`;
@@ -25,34 +27,63 @@ const __dirname = dirname(__filename);
 const app = express();
 const port = 3000;
 
+app.use(session({
+	secret: process.env.AUTH_SECRET,
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(express.urlencoded({ extended: true })); // Support HTML forms
+app.use(express.json()); // Support POST request JSON bodies
+
 // Public HTML/files
 app.use(express.static(__dirname + '/public/'));
 app.use(express.static(__dirname + '/Signin/'));
 app.use(express.static(__dirname + '/MyProfile/'));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Serve webpasges / GET requests
 app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/index.html');
+	res.redirect('/login');
 });
 app.get('/login',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/signin.html');
+	if(!req.session.loggedin) {
+		res.sendFile(__dirname + '/Signin/signin.html');
+	}
+	else res.redirect('/dashboard');
 });
 app.get('/ticket/create',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/createticket.html');
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/Signin/createticket.html');
+	}
+	else res.redirect('/login');
 });
 app.get('/signup',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/Signup.html');
+	if(!req.session.loggedin) {
+		res.sendFile(__dirname + '/Signin/Signup.html');
+	}
+	else res.redirect('/dashboard');
 });
 app.get('/dashboard',(req,res)=>{
-	res.sendFile(__dirname + '/MyProfile/dashboard.html');
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/MyProfile/dashboard.html');
+	}
+	else res.redirect('/login');
 });
 app.get('/profile',(req,res)=>{
-	res.sendFile(__dirname + '/MyProfile/myprofile.html');
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/MyProfile/myprofile.html');
+	}
+	else res.redirect('/login');
 });
 app.get('/ticket',(req,res)=>{
-	res.sendFile(__dirname + '/Signin/ticket.html');
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/Signin/ticket.html');
+	}
+	else res.redirect('/login');
+});
+app.get('/logout',(req,res)=>{
+	req.session.loggedin = false;
+	req.session.user_id = undefined;
+	res.redirect('/login');
 });
 
 // Handle requests / POST requests
@@ -75,7 +106,7 @@ app.post('/signup', (req, res, next) => {
 		// Success
 		() => {
 			// TODO: begin user session (auth)
-			res.redirect('dashboard');
+			res.redirect('/dashboard');
 		},
 		// Fail
 		(err) => {
@@ -87,7 +118,7 @@ app.post('/signup', (req, res, next) => {
 	);
 });
 
-app.post('/login', (req, res, next) => {
+app.post('/login', function(req, res, next) {
 	const {email, upass} = req.body;
 
 	// Search for account
@@ -95,12 +126,20 @@ app.post('/login', (req, res, next) => {
 		// Success
 		(doc) => {
 			// Account exists
-			if(doc) {
-				// TODO: begin express session (auth)
-				res.redirect('dashboard');
+			if(doc.length > 0) {
+				// Authenticate the user
+				// @ts-ignore
+				req.session.loggedin = true;
+				// @ts-ignore
+				req.session.user_id = doc[0]._id;
+				// Redirect to home page
+				res.redirect('/dashboard');
+				res.end();
 			}
 			// Account not found
-			next('Invalid credentials');
+			else{
+				res.status(401).send('Invalid credentials');
+			}
 		},
 		// Fail
 		(err) => {
@@ -116,12 +155,14 @@ app.post('/ticket/create', (req, res, next) => {
 	if(subject.length <= 0) throw new Error('invalid subject');
 	if(details.length <= 0) throw new Error('invalid details');
 	if(department.length <= 0) throw new Error('invalid department');
-	
-	// Create account
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	// Create ticket
 	const newTicket = new Ticket({
 		title: subject,
 		desc: details,
 		department_id: department,
+		creator_id: req.session.user_id,
 		state: 'Pending'
 	});
 	newTicket.save().then(
@@ -135,6 +176,8 @@ app.post('/ticket/create', (req, res, next) => {
 });
 
 app.post('/department', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+
 	// Search for tickets matching filters
 	Department.find(req.body).then(
 		// Success
@@ -150,6 +193,8 @@ app.post('/department', (req, res, next) => {
 });
 
 app.post('/ticket', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+
 	// Search for tickets matching filters
 	Ticket.find(req.body).then(
 		// Success
@@ -165,12 +210,12 @@ app.post('/ticket', (req, res, next) => {
 });
 
 app.post('/profile', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	
 	// Search for tickets matching filters
-	console.log(req.body._id);
 	User.find().where('_id').in(req.body._id).then(
 		// Success
 		(doc) => {
-			console.log(doc);
 			// Send fetched data
 			res.send(doc);
 		},

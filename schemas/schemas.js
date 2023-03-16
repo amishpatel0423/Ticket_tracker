@@ -56,7 +56,10 @@ const userSchema = new Schema({
 		type: String,
 		required: true
 	},
-	avatar: String,
+	avatar: {
+		type: String,
+		default: '',
+	},
 	date: {
 		type: Date,
 		default: Date.now(),

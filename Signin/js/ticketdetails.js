@@ -57,11 +57,15 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 				if(values[1][0]) {
 					if(values[1][0]._id === ticket.assignee_id) {
 						document.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
+						document.getElementById('tick-assignee-link').href = `/ticket/${values[1][0].email}` || '';
 						document.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
+						document.getElementById('tick-creator-link').innerHTML = values[1][1] ? `/ticket/${values[1][1].email}` : '';
 					}
 					else {
 						document.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
+						document.getElementById('tick-creator-link').innerHTML = `/ticket/${values[1][0].email}` || '';
 						document.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
+						document.getElementById('tick-assignee-link').innerHTML = values[1][1] ? `/ticket/${values[1][1].email}` : '';
 					}
 				}
 			});

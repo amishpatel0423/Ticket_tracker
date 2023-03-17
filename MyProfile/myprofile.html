@@ -26,7 +26,11 @@
             <img src="/images/Screenshot-2023-03-09-191430.jpg" loading="lazy" width="254" alt=""></a>
           <a href="/dashboard" class="nav-link">Dashboard</a>
           <a href="/ticket/create" class="nav-link">Create a Ticket</a>
-          <form action="/search" class="search saved-shortlists w-form"><input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search..." id="search" required=""><input type="submit" value="Search" class="search-button _2 w-button"><img src="/images/search.svg" alt="" class="search-icon"></form>
+          <form action="/search" class="search saved-shortlists w-form">
+            <input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search..." id="search" required="">
+            <input type="submit" value="Search" class="search-button _2 w-button">
+            <img src="/images/search.svg" alt="" class="search-icon">
+          </form>
           <nav role="navigation" class="nav-menu-wrapper w-nav-menu">
             <ul role="list" class="nav-menu-two w-list-unstyled">
               <li class="list-item">
@@ -47,8 +51,9 @@
   <div class="wrapper-section wf-section">
     <div class="div-1">
       <div>
-        <label for="file-input">
-          <img id="prof-pfp" src="/images/5dd1ca04edfe6a591970a2cd_face-chad_15dd1ca04edfe6a591970a2cd_face-chad.jpg" loading="lazy" alt="">
+        <label class="profile-avatar" for="file-input">
+          <img id="prof-pfp" src="/images/default.png" loading="lazy" alt="">
+          <img class="profile-avatar2" id="prof-pfp" src="/images/upload.png" loading="lazy" alt="">
         </label>
         <input id="file-input" type="file" style="visibility: hidden" />
         <h1 class="heading-5" id="prof-name"></h1>
@@ -100,7 +105,7 @@
                     <div class="table-row-nr" id="tick-num"></div>
                   </a>
                   <a name="prof-link" class="table-box _2">
-                    <img id="tick-img" src="/images/5dd1ca04edfe6a591970a2cd_face-chad_15dd1ca04edfe6a591970a2cd_face-chad.jpg" width="32" alt="" class="image-7">
+                    <img id="tick-img" src="/images/default.png" width="32" alt="" class="image-7">
                     <div class="table-data name" id="tick-creator"></div>
                   </a>
                   <a name="tick-link" class="table-box _2">

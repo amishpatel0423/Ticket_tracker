@@ -2409,3 +2409,25 @@ body {
     width: 100%;
   }
 }
+
+.profile-avatar {
+  position: relative;
+  display: inline-block;
+  width: 128px;
+  height: 128px;
+}
+
+.profile-avatar2 {
+  width: 128px;
+  height: 128px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: none;
+}
+
+.profile-avatar:hover .profile-avatar2 {
+  display: inline-block;
+  opacity: .5;
+  cursor: pointer;
+}

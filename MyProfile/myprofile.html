@@ -51,14 +51,18 @@
           <img id="prof-pfp" src="/images/5dd1ca04edfe6a591970a2cd_face-chad_15dd1ca04edfe6a591970a2cd_face-chad.jpg" loading="lazy" alt="">
         </label>
         <input id="file-input" type="file" style="visibility: hidden" />
-        <h1 class="heading-5" id="prof-name">Yamik Patel</h1>
-        <h3 class="heading-5" id="prof-dep">IT Department</h3>
+        <h1 class="heading-5" id="prof-name"></h1>
+        <h3 class="heading-5" id="prof-dep"></h3>
       </div>
     </div>
     <div class="div-1">
       <h1 class="heading-3">List of your Tickets</h1>
       <div class="div-block-414">
-        <form action="/search" class="search saved-shortlists w-form"><input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search..." id="search" required=""><input type="submit" value="Search" class="search-button _2 w-button"><img src="/images/search.svg" alt="" class="search-icon"></form>
+        <form action="/search" class="search saved-shortlists w-form">
+          <input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search..." id="search" required="">
+          <input type="submit" value="Search" class="search-button _2 w-button">
+          <img src="/images/search.svg" alt="" class="search-icon">
+        </form>
       </div>
     </div>
     <div class="table-wrapper">
@@ -91,29 +95,29 @@
           <div class="scroll-container">
             <div id="table-row-start" class="scroll-table-content">
               <template id="ticketrow">
-                <a class="table-row" id="tick-link">
-                  <div class="div-block-406 _2">
+                <div class="table-row">
+                  <a name="tick-link" class="div-block-406 _2">
                     <div class="table-row-nr" id="tick-num"></div>
-                  </div>
-                  <div class="table-box _2">
+                  </a>
+                  <a name="prof-link" class="table-box _2">
                     <img id="tick-img" src="/images/5dd1ca04edfe6a591970a2cd_face-chad_15dd1ca04edfe6a591970a2cd_face-chad.jpg" width="32" alt="" class="image-7">
                     <div class="table-data name" id="tick-creator"></div>
-                  </div>
-                  <div class="table-box _2">
+                  </a>
+                  <a name="tick-link" class="table-box _2">
                     <div class="table-data" id="tick-dep"></div>
-                  </div>
-                  <div class="table-box _2">
+                  </a>
+                  <a name="tick-link" class="table-box _2">
                     <div class="table-data" id="tick-subject"></div>
-                  </div>
-                  <div class="table-box _2 small">
+                  </a>
+                  <a name="tick-link" class="table-box _2 small">
                     <div class="table-data" id="tick-date"></div>
-                  </div>
-                  <div class="table-box _2 action" id="tick-priority"></div>
-                  <div class="table-box _2 action" id="tick-assignee"></div>
-                  <div class="table-box _2">
+                  </a>
+                  <a name="tick-link" class="table-box _2 action" id="tick-priority"></a>
+                  <a name="prof-link2" class="table-box _2 action" id="tick-assignee"></a>
+                  <a name="tick-link" class="table-box _2">
                     <div class="table-data" id="tick-id"></div>
-                  </div>
-                </a>
+                  </a>
+                </div>
               </template>
             </div>
           </div>

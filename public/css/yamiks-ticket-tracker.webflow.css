@@ -1164,8 +1164,6 @@ body {
   display: -ms-flexbox;
   display: flex;
   width: 100%;
-  padding-top: 20px;
-  padding-bottom: 20px;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
@@ -1174,13 +1172,17 @@ body {
   -webkit-transition: box-shadow 200ms ease;
   transition: box-shadow 200ms ease;
   color: #9898a3;
-  cursor: pointer;
 }
 
-a.table-row:link { text-decoration: none; }
-a.table-row:visited { text-decoration: none; }
-a.table-row:hover { text-decoration: none; }
-a.table-row:active { text-decoration: none; }
+.table-row a:link { text-decoration: none; }
+.table-row a:visited { text-decoration: none; }
+.table-row a:hover { text-decoration: none; }
+.table-row a:active { text-decoration: none; }
+
+.table-row a {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
 
 .table-row:hover {
   box-shadow: 0 12px 10px 0 rgba(142, 143, 163, 0.06);

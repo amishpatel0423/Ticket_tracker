@@ -46,6 +46,7 @@ const ticketSchema = new Schema({
 		default: '',
 	}
 });
+ticketSchema.index({'$**': 'text'});
 
 const userSchema = new Schema({
 	email: {

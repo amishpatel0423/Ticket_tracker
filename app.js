@@ -336,6 +336,22 @@ app.post('/profile/image', (req, res, next) => {
 	);
 });
 
+// Search for ticket
+app.get('/search', (req, res, next) => {
+	
+	Ticket.find({ $text: { $search: req.query.query } }).then(
+		// Success
+		(doc) => {
+			// Reload page
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 // Start server
 app.listen(port);
 console.log(`running at http://localhost:${port}`);

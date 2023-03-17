@@ -55,7 +55,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						clone.querySelectorAll('[name="tick-link"]').forEach(el => el.href = '/ticket/' + ticket._id);
 						clone.getElementById('tick-num').innerHTML = parseInt(i) + 1;
 						clone.getElementById('tick-img');
-						clone.getElementById('tick-dep').innerHTML = values[0][0].name || ticket.department_id || '';
+						clone.getElementById('tick-dep').innerHTML = ticket.department_id ? (values[0][0].name || ticket.department_id) : '';
 						clone.getElementById('tick-subject').innerHTML = ticket.title || '';
 						clone.getElementById('tick-id').innerHTML = ticket._id || '';
 						clone.getElementById('tick-date').innerHTML = new Date(ticket.date).toLocaleDateString('en-US') || '';

@@ -17,18 +17,20 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 		document.getElementById('prof-name').innerHTML = response[0].name;
 		
 		// Adjust user department
-		fetch(window.location.origin + '/department', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				_id: response[0].department_id
-			})
-		}).then(response => response.json()).then(response => {
-			document.getElementById('prof-dep').innerHTML = response[0].name;
-		});
+		if(response[0].department_id) {
+			fetch(window.location.origin + '/department', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					_id: response[0].department_id
+				})
+			}).then(response => response.json()).then(response => {
+				document.getElementById('prof-dep').innerHTML = response[0].name;
+			});
+		}
 		
 		// Fetch all assigned to and created by user
 		fetch(window.location.origin + '/user-tickets', {
@@ -85,7 +87,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						const clone = template.content.cloneNode(true);
 						clone.querySelectorAll('[name="tick-link"]').forEach(el => el.href = '/ticket/' + ticket._id);
 						clone.getElementById('tick-num').innerHTML = parseInt(i) + 1;
-						clone.getElementById('tick-dep').innerHTML = values[0][0].name || ticket.department_id || '';
+						clone.getElementById('tick-dep').innerHTML = ticket.department_id ? (values[0][0].name || ticket.department_id) : '';
 						clone.getElementById('tick-subject').innerHTML = ticket.title || '';
 						clone.getElementById('tick-id').innerHTML = ticket._id || '';
 						clone.getElementById('tick-date').innerHTML = new Date(ticket.date).toLocaleDateString('en-US') || '';

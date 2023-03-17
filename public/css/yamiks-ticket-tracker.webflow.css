@@ -1177,6 +1177,11 @@ body {
   cursor: pointer;
 }
 
+a.table-row:link { text-decoration: none; }
+a.table-row:visited { text-decoration: none; }
+a.table-row:hover { text-decoration: none; }
+a.table-row:active { text-decoration: none; }
+
 .table-row:hover {
   box-shadow: 0 12px 10px 0 rgba(142, 143, 163, 0.06);
   color: #4347e7;

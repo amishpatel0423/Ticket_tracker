@@ -52,6 +52,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 					.then(values => {
 						// Clone template and insert data
 						const clone = template.content.cloneNode(true);
+						clone.getElementById('tick-link').href = '/ticket/' + ticket._id;
 						clone.getElementById('tick-num').innerHTML = parseInt(i) + 1;
 						clone.getElementById('tick-img');
 						clone.getElementById('tick-dep').innerHTML = values[0][0].name || ticket.department_id || '';

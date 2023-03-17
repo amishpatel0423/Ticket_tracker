@@ -66,11 +66,13 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 								clone.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
 								clone.querySelector('[name="prof-link2"]').href = `/profile/${values[1][0].email}`;
 								clone.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
+								clone.getElementById('tick-img').src = values[1][1] ? (values[1][1].avatar  || '/images/default.png') :  '';
 								clone.querySelector('[name="prof-link"]').href = values[1][1] ? `/profile/${values[1][1].email}` : '';
 							}
 							else {
 								clone.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
 								clone.querySelector('[name="prof-link"]').href = `/profile/${values[1][0].email}`;
+								clone.getElementById('tick-img').src = values[1][0].avatar || '/images/default.png';
 								clone.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
 								clone.querySelector('[name="prof-link2"]').href = values[1][1] ? `/profile/${values[1][1].email}` : '';
 							}

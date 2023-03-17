@@ -317,6 +317,24 @@ app.post('/profile', (req, res, next) => {
 	);
 });
 
+// Upload user profile picture
+app.post('/profile/image', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!req.body.img) throw new Error('no image');
+	
+	User.findOneAndUpdate({ _id: req.session.user._id }, { avatar: req.body.img }, { upsert: true }).then(
+		// Success
+		() => {
+			// Reload page
+			res.redirect('/profile');
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 // Start server
 app.listen(port);
 console.log(`running at http://localhost:${port}`);

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { Comment, Department, Ticket, User } from './schemas/schemas.js';
 import express from 'express';
 import compression from 'compression';
+import minify from 'express-minify';
 import session from 'express-session';
 
 // Connect to database
@@ -29,6 +30,7 @@ const app = express();
 const port = 3000;
 
 app.use(compression());
+app.use(minify());
 app.use(session({
 	secret: process.env.AUTH_SECRET,
 	resave: true,

@@ -6,6 +6,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Comment, Department, Ticket, User } from './schemas/schemas.js';
 import express from 'express';
+import compression from 'compression';
 import session from 'express-session';
 
 // Connect to database
@@ -27,6 +28,7 @@ const __dirname = dirname(__filename);
 const app = express();
 const port = 3000;
 
+app.use(compression());
 app.use(session({
 	secret: process.env.AUTH_SECRET,
 	resave: true,
@@ -36,7 +38,7 @@ app.use(express.urlencoded({ extended: true })); // Support HTML forms
 app.use(express.json({limit: '20kb'})); // Support POST request JSON bodies
 
 // Public HTML/files
-app.use(express.static(__dirname + '/public/'));
+app.use(express.static(__dirname + '/public/')); // adjust to express.static(__dirname + '/public/', { maxAge: 31557600 }); for caching
 app.use(express.static(__dirname + '/Signin/'));
 app.use(express.static(__dirname + '/MyProfile/'));
 app.use(express.static(__dirname + '/TicketDetail page/'));

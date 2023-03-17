@@ -118,29 +118,40 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 
 function uploadImage() {
 	var file = document.querySelector('input[type=file]').files[0];
-	console.log(file.size);
+	
 	var reader = new FileReader();
 	reader.onloadend = function () {
-		// Prep for max image size validation
-		console.log((new TextEncoder().encode(reader.result)).length);
-		fetch(window.location.origin + '/profile/image', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				img: reader.result
-			})
-		});
-		console.log(reader.result);
+		// Check if image too large
+		if((new TextEncoder().encode(reader.result)).length >= 20000) {
+			document.getElementById('error-box').style.visibility = 'visible';
+			document.getElementById('error').innerHTML = 'File too large';
+			console.error('File too large!');
+		}
+		// Send upload request
+		else {
+			fetch(window.location.origin + '/profile/image', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					img: reader.result
+				})
+			}).then(response => {
+				// Handle errors
+				if(!response.ok) {
+					(response.text()).then(response => {
+						document.getElementById('error-box').style.visibility = 'visible';
+						document.getElementById('error').innerHTML = response;
+					});
+				}
+				// Refresh the page
+				else if (response.status === 200) {
+					window.location.reload();
+				}
+			});
+		}
 	};
 	reader.readAsDataURL(file);
-
-	
-	
-	/* Move to app.js
-	*/
-	// let src = 'data:image/png;base64,' + String.fromCharCode.apply(null, file).toString('base64');
-	// console.log(src);
 }

@@ -2431,3 +2431,19 @@ body {
   opacity: .5;
   cursor: pointer;
 }
+
+.error-message {
+  margin-bottom: 10px;
+  padding: 10px;
+  min-width: 20%;
+  background-color: #ffdede;
+  display: table;
+}
+
+.success-message {
+  margin-bottom: 10px;
+  padding: 10px;
+  min-width: 20%;
+  background-color: #deffe2;
+  display: table;
+}

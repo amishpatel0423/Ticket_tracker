@@ -9,7 +9,7 @@ import express from 'express';
 import session from 'express-session';
 
 // Connect to database
-const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/${process.env.ENVIRONMENT}?retryWrites=true&w=majority`;
 await mongoose.connect(uri).then(
 	// Promise fulfilled
 	() => {
@@ -33,7 +33,7 @@ app.use(session({
 	saveUninitialized: true
 }));
 app.use(express.urlencoded({ extended: true })); // Support HTML forms
-app.use(express.json()); // Support POST request JSON bodies
+app.use(express.json({limit: '20kb'})); // Support POST request JSON bodies
 
 // Public HTML/files
 app.use(express.static(__dirname + '/public/'));
@@ -327,6 +327,7 @@ app.post('/profile/image', (req, res, next) => {
 		() => {
 			// Reload page
 			res.redirect('/profile');
+			res.end();
 		},
 		// Fail
 		(err) => {

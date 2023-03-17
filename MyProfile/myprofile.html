@@ -51,8 +51,11 @@
   <div class="wrapper-section wf-section">
     <div class="div-1">
       <div>
+        <div id="error-box" style="visibility: hidden;" class="error-message">
+          <div id="error"></div>
+        </div>
         <label class="profile-avatar" for="file-input">
-          <img id="prof-pfp" src="/images/default.png" loading="lazy" alt="">
+          <img id="prof-pfp" style="height: 128px; width: 128px;" loading="lazy" alt="">
           <img class="profile-avatar2" id="prof-pfp" src="/images/upload.png" loading="lazy" alt="">
         </label>
         <input id="file-input" type="file" accept="image/*" onchange="uploadImage()" style="visibility: hidden" />
@@ -105,7 +108,7 @@
                     <div class="table-row-nr" id="tick-num"></div>
                   </a>
                   <a name="prof-link" class="table-box _2">
-                    <img id="tick-img" src="/images/default.png" width="32" alt="" class="image-7">
+                    <img id="tick-img" width="32" alt="" class="image-7">
                     <div class="table-data name" id="tick-creator"></div>
                   </a>
                   <a name="tick-link" class="table-box _2">

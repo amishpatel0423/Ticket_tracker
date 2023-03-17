@@ -117,8 +117,11 @@ app.post('/signup', (req, res, next) => {
 	});
 	newUser.save().then(
 		// Success
-		() => {
-			// TODO: begin user session (auth)
+		(doc) => {
+			// Authenticate the user
+			req.session.loggedin = true;
+			req.session.user = doc;
+			// Redurect to home page
 			res.redirect('/dashboard');
 		},
 		// Fail

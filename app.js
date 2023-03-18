@@ -85,7 +85,8 @@ app.get('/profile',(req,res)=>{
 	}
 	else res.redirect('/login');
 });
-app.get('/profile/:email',(req,res)=>{
+app.get('/profile/:email',(
+	req,res)=>{
 	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/MyProfile/myprofile.html');
 	}
@@ -137,6 +138,8 @@ app.post('/signup', (req, res, next) => {
 		}
 	);
 });
+
+// this is for login page
 
 app.post('/login', function(req, res, next) {
 	const {email, upass} = req.body;

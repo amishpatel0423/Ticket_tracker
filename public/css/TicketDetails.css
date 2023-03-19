@@ -1054,3 +1054,11 @@
     padding-left: 8px;
   }
 }
+
+.no-link:link { text-decoration: none; }
+.no-link:visited { text-decoration: none; }
+.no-link:hover { text-decoration: none; }
+.no-link:active { text-decoration: none; }
+.no-link {
+  color: inherit;
+}

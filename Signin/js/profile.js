@@ -93,22 +93,28 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						clone.getElementById('tick-date').innerHTML = new Date(ticket.date).toLocaleDateString('en-US') || '';
 						clone.getElementById('tick-priority').innerHTML = ticket.priority || '';
 						
-						if(values[1][0]) {
-							if(values[1][0]._id === ticket.assignee_id) {
-								clone.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
-								clone.querySelector('[name="prof-link2"]').href = `/profile/${values[1][0].email}`;
-								clone.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
-								clone.getElementById('tick-img').src = values[1][1] ? (values[1][1].avatar  || '/images/default.png') :  '';
-								clone.querySelector('[name="prof-link"]').href = values[1][1] ? `/profile/${values[1][1].email}` : '';
+						var creator, assignee;
+						// Find creator / assignee
+						if(values[1].length > 1) {
+							creator = (values[1][0]._id === ticket.creator_id) ? values[1][0] : values[1][1];
+							assignee = (values[1][0]._id === ticket.assignee_id) ? values[1][0] : values[1][1];
+						} 
+						else if(values[1].length > 0) {
+							if(ticket.creator_id === ticket.assignee_id) {
+								creator = values[1][0];
+								assignee = values[1][0];
 							}
-							else {
-								clone.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
-								clone.querySelector('[name="prof-link"]').href = `/profile/${values[1][0].email}`;
-								clone.getElementById('tick-img').src = values[1][0].avatar || '/images/default.png';
-								clone.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
-								clone.querySelector('[name="prof-link2"]').href = values[1][1] ? `/profile/${values[1][1].email}` : '';
-							}
+							else if(values[1][0]._id === ticket.creator_id)
+								creator = values[1][0];
+							else assignee = values[1][0];
 						}
+
+						// Fill in creator/assignee values
+						clone.getElementById('tick-assignee').innerHTML = assignee ? assignee.name : '';
+						clone.querySelector('[name="prof-link2"]').href = assignee ? `/profile/${assignee.email}` : '';
+						clone.getElementById('tick-creator').innerHTML = creator ? creator.name :  '';
+						clone.getElementById('tick-img').src = creator ? (creator.avatar || '/images/default.png') : '';
+						clone.querySelector('[name="prof-link"]').href = creator ? `/profile/${creator.email}` : '';
 
 						// Append newly created row
 						child.replaceWith(clone);

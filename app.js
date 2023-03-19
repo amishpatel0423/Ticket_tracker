@@ -85,8 +85,7 @@ app.get('/profile',(req,res)=>{
 	}
 	else res.redirect('/login');
 });
-app.get('/profile/:email',(
-	req,res)=>{
+app.get('/profile/:email',(req,res)=>{
 	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/MyProfile/myprofile.html');
 	}

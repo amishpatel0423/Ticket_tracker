@@ -26,7 +26,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 			})
 		});
 		// Get name by user id
-		const user_p = fetch(window.location.origin + '/profile', {
+		const user_p = fetch(window.location.origin + '/profiles', {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -54,20 +54,28 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 				document.getElementById('tick-subject').innerHTML = ticket.title || '';
 				document.getElementById('tick-desc').innerHTML = ticket.desc || '';
 				
-				if(values[1][0]) {
-					if(values[1][0]._id === ticket.assignee_id) {
-						document.getElementById('tick-assignee').innerHTML = values[1][0].name || ticket.assignee_id || '';
-						document.getElementById('tick-assignee-link').href = `/ticket/${values[1][0].email}` || '';
-						document.getElementById('tick-creator').innerHTML = values[1][1] ? values[1][1].name : ticket.creator_id ||  '';
-						document.getElementById('tick-creator-link').innerHTML = values[1][1] ? `/ticket/${values[1][1].email}` : '';
+				var creator, assignee;
+				// Find creator / assignee
+				if(values[1].length > 1) {
+					creator = (values[1][0]._id === ticket.creator_id) ? values[1][0] : values[1][1];
+					assignee = (values[1][0]._id === ticket.assignee_id) ? values[1][0] : values[1][1];
+				} 
+				else if(values[1].length > 0) {
+					if(ticket.creator_id === ticket.assignee_id) {
+						creator = values[1][0];
+						assignee = values[1][0];
 					}
-					else {
-						document.getElementById('tick-creator').innerHTML = values[1][0].name || ticket.creator_id || '';
-						document.getElementById('tick-creator-link').innerHTML = `/ticket/${values[1][0].email}` || '';
-						document.getElementById('tick-assignee').innerHTML = values[1][1] ? values[1][1].name : ticket.assignee_id ||  '';
-						document.getElementById('tick-assignee-link').innerHTML = values[1][1] ? `/ticket/${values[1][1].email}` : '';
-					}
+					else if(values[1][0]._id === ticket.creator_id)
+						creator = values[1][0];
+					else assignee = values[1][0];
 				}
+
+				// Fill in creator/assignee values
+				document.getElementById('tick-assignee').innerHTML = assignee ? assignee.name : '';
+				document.getElementById('tick-assignee-link').href = assignee ? `/profile/${assignee.email}` : '';
+				document.getElementById('tick-creator').innerHTML = creator ? creator.name :  '';
+				document.getElementById('tick-creator-link').href = creator ? `/profile/${creator.email}` : '';
+				
 			});
 		
 	});
@@ -109,6 +117,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 			}).then(values => values.json()).then(values =>{
 				//Clone template and insert data
 				const clone = template.content.cloneNode(true);
+				clone.getElementById('comm-link').href = `/profile/${values[0].email}`;
 				clone.getElementById('comm-name').innerHTML = values[0].name;
 				clone.getElementById('comm-text').innerHTML = comment.text;
 

@@ -92,7 +92,7 @@
           <div class="w-col w-col-3">
             <h1 class="heading-11">Created By :</h1>
           </div>
-          <a id="tick-creator-link" class="w-col w-col-9">
+          <a id="tick-creator-link" class="w-col w-col-9 no-link">
             <h1 class="heading-11" id="tick-creator"></h1>
           </a>
         </div>
@@ -100,7 +100,7 @@
           <div class="w-col w-col-3">
             <h1 class="heading-11">Assigned To :</h1>
           </div>
-          <a id="tick-assignee-link" class="w-col w-col-9">
+          <a id="tick-assignee-link" class="w-col w-col-9 no-link">
             <h1 class="heading-11" id="tick-assignee"></h1>
           </a>
         </div>
@@ -129,7 +129,9 @@
       <template id="commentitem">
         <li class="comment">
           <div class="comment-body">
-            <h3 class="comment-author" id="comm-name"></h3>
+            <a class="no-link" id="comm-link">
+              <h3 class="comment-author" id="comm-name"></h3>
+            </a>
             <p class="comment-content" id="comm-text"></p>
           </div>
         </li>

@@ -79,6 +79,12 @@ app.get('/dashboard',(req,res)=>{
 	}
 	else res.redirect('/login');
 });
+app.get('/search',(req,res)=>{
+	if(req.session.loggedin) {
+		res.sendFile(__dirname + '/MyProfile/search.html');
+	}
+	else res.redirect('/login');
+});
 app.get('/profile',(req,res)=>{
 	if(req.session.loggedin) {
 		res.redirect(`/profile/${req.session.user.email}`);
@@ -343,19 +349,20 @@ app.post('/profile/image', (req, res, next) => {
 });
 
 // Search for ticket
-app.get('/search', (req, res, next) => {
-	
-	Ticket.find({ $text: { $search: req.query.query } }).then(
-		// Success
-		(doc) => {
-			// Reload page
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+app.post('/search', (req, res, next) => {
+	if(req.session.loggedin) {
+		Ticket.find({ $text: { $search: req.query.query } }).then(
+			// Success
+			(doc) => {
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				next(err);
+			}
+		);
+	}
+	else res.redirect('/login');
 });
 
 // Start server

@@ -63,16 +63,18 @@
         <h3 class="heading-5" id="prof-dep"></h3>
       </div>
     </div>
-    <div class="div-1">
+    <div class="div-1" style="margin-bottom: 0px">
       <h1 class="heading-3">List of your Tickets</h1>
-      <div class="div-block-414">
-        <form action="/search" class="search saved-shortlists w-form">
-          <input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search..." id="search" required="">
-          <input type="submit" value="Search" class="search-button _2 w-button">
-          <img src="/images/search.svg" alt="" class="search-icon">
-        </form>
-      </div>
     </div>
+    <h4 style="margin-left: auto; margin-right: 0">
+      <select onchange="searchStatus(this)">
+        <option value="">All</option>
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Complete">Complete</option>
+        <option value="Closed">Closed</option>
+      </select>
+    </h4>
     <div class="table-wrapper">
       <div class="table-row head">
         <div class="div-block-406"></div>
@@ -103,7 +105,7 @@
           <div class="scroll-container">
             <div id="table-row-start" class="scroll-table-content">
               <template id="ticketrow">
-                <div class="table-row">
+                <div id="ticketdiv" class="table-row">
                   <a name="tick-link" class="div-block-406 _2">
                     <div class="table-row-nr" id="tick-num"></div>
                   </a>

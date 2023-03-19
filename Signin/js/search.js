@@ -1,8 +1,10 @@
 // @ts-nocheck
 /* eslint-disable no-undef */
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
+	document.getElementById('results-title').innerHTML = `Results for "${(new URLSearchParams(window.location.search)).get('query')}"`;
+
 	// Fetch all tickets
-	fetch(window.location.origin + '/ticket', {
+	fetch(window.location.href, {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/json',
@@ -54,6 +56,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						const clone = template.content.cloneNode(true);
 						clone.querySelectorAll('[name="tick-link"]').forEach(el => el.href = '/ticket/' + ticket._id);
 						clone.getElementById('tick-num').innerHTML = parseInt(i) + 1;
+						clone.getElementById('tick-img');
 						clone.getElementById('tick-dep').innerHTML = ticket.department_id ? (values[0][0].name || ticket.department_id) : '';
 						clone.getElementById('tick-subject').innerHTML = ticket.title || '';
 						clone.getElementById('tick-id').innerHTML = ticket._id || '';
@@ -82,11 +85,11 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						clone.getElementById('tick-creator').innerHTML = creator ? creator.name :  '';
 						clone.getElementById('tick-img').src = creator ? (creator.avatar || '/images/default.png') : '';
 						clone.querySelector('[name="prof-link"]').href = creator ? `/profile/${creator.email}` : '';
-
+						
 						// Status identifier
 						clone.getElementById('ticketdiv').setAttribute('name', ticket.state);
 						
-						// Add newly created row
+						// Append newly created row
 						child.replaceWith(clone);
 					});
 			}

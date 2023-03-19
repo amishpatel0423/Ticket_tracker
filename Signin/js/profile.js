@@ -116,6 +116,9 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 						clone.getElementById('tick-img').src = creator ? (creator.avatar || '/images/default.png') : '';
 						clone.querySelector('[name="prof-link"]').href = creator ? `/profile/${creator.email}` : '';
 
+						// Status identifier
+						clone.getElementById('ticketdiv').setAttribute('name', ticket.state);
+						
 						// Append newly created row
 						child.replaceWith(clone);
 					});
@@ -162,4 +165,17 @@ function uploadImage() {
 		}
 	};
 	reader.readAsDataURL(file);
+}
+
+function searchStatus(sel) {
+	var selection = sel.value;
+	let states = ['', 'Pending', 'In Progress', 'Complete', 'Closed'];
+	states.forEach(state => {
+		document.getElementsByName(state).forEach(
+			el => {
+				el.style.display = (( !selection || el.getAttribute('name') === selection) ? 'flex' : 'none');
+			}
+		);
+	}
+	);
 }

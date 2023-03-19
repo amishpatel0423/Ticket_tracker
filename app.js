@@ -44,6 +44,7 @@ app.use(express.static(__dirname + '/public/')); // adjust to express.static(__d
 app.use(express.static(__dirname + '/Signin/'));
 app.use(express.static(__dirname + '/MyProfile/'));
 app.use(express.static(__dirname + '/TicketDetail page/'));
+app.use(express.static(__dirname + '/Managerticketpage/'));
 
 // Serve webpasges / GET requests
 app.get('/', (req, res) => {
@@ -55,6 +56,20 @@ app.get('/login',(req,res)=>{
 	}
 	else res.redirect('/dashboard');
 });
+
+app.get('/ticket/edit',(req,res)=>{
+	if(req.session.loggedin) {
+		if(req.session.user.permission_level === 'Manager')
+		{
+			res.sendFile(__dirname + '/Managerticketpage/Managerpage.html');
+		}
+		else{
+			res.redirect('/ticket');
+		}
+	}
+	else res.redirect('/login');
+});
+
 app.get('/ticket/create',(req,res)=>{
 	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/Signin/createticket.html');
@@ -97,6 +112,9 @@ app.get('/profile/:email',(req,res)=>{
 	}
 	else res.redirect('/login');
 });
+
+
+
 app.get('/ticket',(req,res)=>{
 	if(req.session.loggedin) {
 		res.sendFile(__dirname + '/TicketDetail page/Ticketdetails.html');
@@ -108,6 +126,8 @@ app.get('/logout',(req,res)=>{
 	req.session.user = undefined;
 	res.redirect('/login');
 });
+
+
 
 // Handle requests / POST requests
 app.post('/signup', (req, res, next) => {
@@ -217,6 +237,29 @@ app.post('/department', (req, res, next) => {
 		}
 	);
 });
+////////////////////////////////////////////////////////////////////////////////////////
+// Change status of the ticket 
+app.post('/ticket/status', (req, res, next) => {
+
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('No status');
+	
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }, { upsert: true }).then(
+		// Success
+		() => {
+			// Reload page
+			res.send(`State Updated to: ${req.body.state}`);
+			res.end();
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+////
 
 // Fetch tickets matching query
 app.post('/ticket', (req, res, next) => {
@@ -364,6 +407,9 @@ app.post('/search', (req, res, next) => {
 	}
 	else res.redirect('/login');
 });
+
+
+
 
 // Start server
 app.listen(port);

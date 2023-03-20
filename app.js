@@ -253,7 +253,7 @@ app.post('/profile/image', (req, res) => {
 // update user department
 app.post('/profile/department', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level != 'Manager') throw new Error('incorrect permissions');
+	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
 	
 	let update = { $unset: { department_id: null }};
 	if(req.body.department_id)
@@ -308,8 +308,9 @@ app.post('/ticket/create', (req, res, next) => {
 // change ticket department 
 app.post('/ticket/department', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!req.body.department_id) throw new Error('No department id');
-	
+	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
+	if(!req.body.department_id) throw new Error('no department id');
+
 	Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }).then(
 		// Success
 		() => {
@@ -326,6 +327,7 @@ app.post('/ticket/department', (req, res, next) => {
 // change ticket assignee 
 app.post('/ticket/assignee', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
+	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
 	if(!req.body.assignee_id) req.body.assignee_id = null;
 	
 	Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }).then(
@@ -344,7 +346,8 @@ app.post('/ticket/assignee', (req, res, next) => {
 // change ticket status 
 app.post('/ticket/status', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('No valid status');
+	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
+	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('invalid status');
 	
 	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }).then(
 		// Success
@@ -362,7 +365,8 @@ app.post('/ticket/status', (req, res, next) => {
 // change ticket priority
 app.post('/ticket/priority', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('No valid priority');
+	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
+	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('invalid priority');
 	
 	Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }).then(
 		// Success

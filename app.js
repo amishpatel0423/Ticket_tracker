@@ -238,6 +238,27 @@ app.post('/department', (req, res, next) => {
 	);
 });
 ////////////////////////////////////////////////////////////////////////////////////////
+//Chnaging ticket's priority
+app.post('/ticket/prority', (req, res, next) => {
+
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('No Prority');
+	
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.priority }, { upsert: true }).then(
+		// Success
+		() => {
+			// Reload page
+			res.send(`Priority Updated to: ${req.body.priority}`);
+			res.end();
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 // Change status of the ticket 
 app.post('/ticket/status', (req, res, next) => {
 
@@ -258,6 +279,7 @@ app.post('/ticket/status', (req, res, next) => {
 		}
 	);
 });
+
 
 ////
 

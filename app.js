@@ -395,22 +395,48 @@ app.post('/profile', (req, res, next) => {
 });
 
 // Upload user profile picture
-app.post('/profile/image', (req, res, next) => {
+app.post('/profile/image', (req, res) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 	if(!req.body.img) throw new Error('no image');
 	
-	User.findOneAndUpdate({ _id: req.session.user._id }, { avatar: req.body.img }, { upsert: true }).then(
+	User.findOneAndUpdate({ _id: req.session.user._id }, { avatar: req.body.img }).then(
 		// Success
 		() => {
-			// Reload page
-			res.redirect('/profile');
 			res.end();
+		},
+		// Fail
+		(err) => {
+			res.status(401).send(err);
+		}
+	);
+});
+
+// Update user department
+app.post('/profile/department', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(req.session.user.permission_level != 'Manager') throw new Error('incorrect permissions');
+	
+	let update = { $unset: { department_id: null }};
+	if(req.body.department_id)
+		update = { department_id: req.body.department_id};
+
+	User.findOneAndUpdate({ _id: req.body._id }, update).then(
+		// Success
+		() => {
+			res.send('updated department');
 		},
 		// Fail
 		(err) => {
 			next(err);
 		}
 	);
+});
+
+// Check if current user is manager
+app.post('/isManager', (req, res) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	
+	res.send({isManager: req.session.user.permission_level === 'Manager'});
 });
 
 // Search for ticket

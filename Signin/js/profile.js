@@ -15,6 +15,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 		// Adjust profile picture and name
 		document.getElementById('prof-pfp').src = response[0].avatar || '/images/default.png';
 		document.getElementById('prof-name').innerHTML = response[0].name;
+		document.getElementById('prof-name').setAttribute('name', response[0]._id);
 		
 		// Adjust user department
 		if(response[0].department_id) {
@@ -32,6 +33,18 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 			});
 		}
 		
+		// Allow managers to change user department
+		fetch(window.location.origin + '/isManager', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+		}).then(r => r.json()).then(r => {
+			console.log(r);
+			if(r.isManager) isManager(response[0].department_id);
+		});
+
 		// Fetch all assigned to and created by user
 		fetch(window.location.origin + '/user-tickets', {
 			method: 'POST',
@@ -178,4 +191,59 @@ function searchStatus(sel) {
 		);
 	}
 	);
+}
+
+function isManager(dep_id) {
+	// Fetch all departmenets
+	fetch(window.location.origin + '/department', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		}
+	}).then(response => response.json())
+		.then(response => {
+			// Add department options to select
+			let select = document.getElementById('department-select');
+			for (const dep of response) {
+				let option = new Option(dep.name, dep._id);
+				// @ts-ignore
+				select.add(option,undefined);
+			}
+
+			// Add 'None' option
+			let option = new Option('Unassigned', '');
+			// @ts-ignore
+			select.add(option,undefined);
+		
+			// Set default value to user's current department
+			select.value = dep_id || '';
+
+			// Adjust visibility
+			document.getElementById('prof-dep-select').style.display = 'block';
+			document.getElementById('prof-dep').style.display = 'none';
+		});
+}
+
+function updateDepartment(sel) {
+	// Update departmenet
+	fetch(window.location.origin + '/profile/department', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			_id: document.getElementById('prof-name').getAttribute('name'),
+			department_id: sel.value
+		})
+	}).then(response => {
+		// Error if error
+		if(!response.ok) {
+			(response.text()).then(response => {
+				document.getElementById('error-box').style.visibility = 'visible';
+				document.getElementById('error').innerHTML = response;
+			});
+		}
+	});
 }

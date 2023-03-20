@@ -60,7 +60,11 @@
         </label>
         <input id="file-input" type="file" accept="image/*" onchange="uploadImage()" style="visibility: hidden" />
         <h1 class="heading-5" id="prof-name"></h1>
-        <h3 class="heading-5" id="prof-dep"></h3>
+        <h3 class="heading-5" style="display: none" id="prof-dep-select">
+          <select style="background-color: black;" id="department-select" onchange="updateDepartment(this)">
+          </select>
+        </h3>
+        <h3 class="heading-5" id="prof-dep">Finance</h3>
       </div>
     </div>
     <div class="div-1" style="margin-bottom: 0px">

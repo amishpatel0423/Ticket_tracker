@@ -28,10 +28,6 @@ app.use(express.json({limit: '20kb'})); // Support POST request JSON bodies
 
 // Public HTML/files
 app.use(express.static(__dirname + '/public/')); // adjust to express.static(__dirname + '/public/', { maxAge: 31557600 }); for caching
-// app.use(express.static(__dirname + '/Signin/'));
-// app.use(express.static(__dirname + '/MyProfile/'));
-// app.use(express.static(__dirname + '/TicketDetail page/'));
-// app.use(express.static(__dirname + '/Managerticketpage/'));
 
 // === Serve webpages / GET requests ===
 app.get('/', (req, res) => {
@@ -43,13 +39,13 @@ app.get('/status', (req, res) => {
 
 //	PROFILE / AUTH
 app.get('/signup',(req,res)=>{
-	if(!req.session.loggedin) {
+	if(!req.session.loggedin || !req.session.user) {
 		res.sendFile(__dirname + '/pages/signup.html');
 	}
 	else res.redirect('/dashboard');
 });
 app.get('/login',(req,res)=>{
-	if(!req.session.loggedin) {
+	if(!req.session.loggedin || !req.session.user) {
 		res.sendFile(__dirname + '/pages/login.html');
 	}
 	else res.redirect('/dashboard');
@@ -130,41 +126,46 @@ app.get('/search',(req,res)=>{
 // === Handle requests / POST requests ===
 //	ACCOUNT / AUTH
 // create account
-app.post('/signup', (req, res, next) => {
+app.post('/signup', (req, res) => {
 	const {email, uname, upass} = req.body;
 	
 	// Server-side data verification
-	if(email.length <= 0) throw new Error('invalid email');
-	if(uname.length <= 0) throw new Error('invalid name');
-	if(upass.length <= 0) throw new Error('invalid password');
+	if(email.length <= 0)
+		res.status(400).json({error: 'invalid email'});
+	else if(uname.length <= 0) 
+		res.status(400).json({error: 'invalid name'});
+	else if(upass.length <= 0) 
+		res.status(400).json({error: 'invalid password'});
 
+	else {
 	// Create account
-	const newUser = new User({
-		email: email,
-		name: uname,
-		password: upass,
-		permission_level: 'User'
-	});
-	newUser.save().then(
+		const newUser = new User({
+			email: email,
+			name: uname,
+			password: upass,
+			permission_level: 'User'
+		});
+		newUser.save().then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Authenticate the user
-			req.session.loggedin = true;
-			req.session.user = doc;
-			// Redurect to home page
-			res.redirect('/dashboard');
-		},
-		// Fail
-		(err) => {
+				req.session.loggedin = true;
+				req.session.user = doc;
+				// Redurect to home page
+				res.redirect('/dashboard');
+			},
+			// Fail
+			(err) => {
 			// Error: email in use
-			if(err.message.includes('dup key'))
-				next('Email already in use! Please log in');
-			next(err);
-		}
-	);
+				if(err.message.includes('dup key'))
+					res.status(401).json({error: 'Email already in use! Please log in'});
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // login user
-app.post('/login', function(req, res, next) {
+app.post('/login', function(req, res) {
 	const {email, upass} = req.body;
 	// Search for account
 	User.find({email: email, password: upass}).then(
@@ -181,308 +182,367 @@ app.post('/login', function(req, res, next) {
 			}
 			// Account not found
 			else{
-				res.status(401).send('Invalid credentials');
+				res.status(401).json({error: 'Invalid credentials'});
 			}
 		},
 		// Fail
 		(err) => {
-			next(err);
+			res.status(400).json({error: err});
 		}
 	);
 });
 // fetch profiles given IDs
-app.post('/profiles', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/profiles', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
+	else {
 	// Search for users with matching user IDs
-	User.find().where('_id').in(req.body._id).then(
+		User.find().where('_id').in(req.body._id).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // search for profiles
-app.post('/profile', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/profile', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
-	// Search for users matching filters
-	User.find(req.body).then(
+	else {
+		// Search for users matching filters
+		User.find(req.body).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // upload profile picture
 app.post('/profile/image', (req, res) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!req.body.img) throw new Error('no image');
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(!req.body.img) 
+		res.status(400).json({error: 'no image provided'});
 	
-	User.findOneAndUpdate({ _id: req.session.user._id }, { avatar: req.body.img }).then(
+	else {
+		User.findOneAndUpdate({ _id: req.session.user._id }, { avatar: req.body.img }).then(
 		// Success
-		() => {
-			res.end();
-		},
-		// Fail
-		(err) => {
-			res.status(401).send(err);
-		}
-	);
+			() => {
+				res.end();
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // update user department
-app.post('/profile/department', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
+app.post('/profile/department', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permissions'});
 	
-	let update = { $unset: { department_id: null }};
-	if(req.body.department_id)
-		update = { department_id: req.body.department_id};
+	else {
+		let update = { $unset: { department_id: null }};
+		if(req.body.department_id)
+			update = { department_id: req.body.department_id};
 
-	User.findOneAndUpdate({ _id: req.body._id }, update).then(
+		User.findOneAndUpdate({ _id: req.body._id }, update).then(
 		// Success
-		() => {
-			res.send('updated department');
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+			() => {
+				res.send('updated department');
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // check if current user is manager
 app.post('/isManager', (req, res) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 	
-	res.send({isManager: req.session.user.permission_level === 'Manager'});
+	else 
+		res.send({isManager: req.session.user.permission_level === 'Manager'});
 });
 
 //	TICKETS
 // create new ticket
-app.post('/ticket/create', (req, res, next) => {
+app.post('/ticket/create', (req, res) => {
 	const {subject, details, department} = req.body;
-	
-	// Server-side data verification
-	if(subject.length <= 0) throw new Error('invalid subject');
-	if(details.length <= 0) throw new Error('invalid details');
-	if(department.length <= 0) throw new Error('invalid department');
-	if(!req.session.loggedin) throw new Error('not logged in');
+	// Server-side validation
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(subject.length <= 0) 
+		res.status(400).json({error: 'invalid subject'});
+	else if(details.length <= 0) 
+		res.status(400).json({error: 'invalid details'});
+	else if(department.length <= 0) 
+		res.status(400).json({error: 'invalid department'});
 
+	else {
 	// Create ticket
-	const newTicket = new Ticket({
-		title: subject,
-		desc: details,
-		department_id: department,
-		creator_id: req.session.user._id,
-		state: 'Pending'
-	});
-	newTicket.save().then(
+		const newTicket = new Ticket({
+			title: subject,
+			desc: details,
+			department_id: department,
+			creator_id: req.session.user._id,
+			state: 'Pending'
+		});
+		newTicket.save().then(
 		// Success
-		() => res.redirect('/dashboard'),
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+			() => res.redirect('/dashboard'),
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // change ticket department 
-app.post('/ticket/department', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
-	if(!req.body.department_id) throw new Error('no department id');
+app.post('/ticket/department', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permissions'});
+	else if(!req.body.department_id) 
+		res.status(400).json({error: 'no department ID'});
 
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }).then(
+	else {
+		Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }).then(
 		// Success
-		() => {
+			() => {
 			// Reload page
-			res.send(`Department_Id Updated to: ${req.body.department_id}`);
-			res.end();
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(`Department_Id Updated to: ${req.body.department_id}`);
+				res.end();
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // change ticket assignee 
-app.post('/ticket/assignee', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
-	if(!req.body.assignee_id) req.body.assignee_id = null;
+app.post('/ticket/assignee', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permissions'});
+	else if(!req.body.assignee_id) req.body.assignee_id = null;
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }).then(
+	else {
+		Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }).then(
 		// Success
-		() => {
+			() => {
 			// Reload page
-			res.send(`Assignee_Id Updated to: ${req.body.assignee_id}`);
-			res.end();
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(`Assignee_Id Updated to: ${req.body.assignee_id}`);
+				res.end();
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // change ticket status 
-app.post('/ticket/status', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
-	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('invalid status');
+app.post('/ticket/status', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permissions'});
+	else if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) 
+		res.status(400).json({error: 'invalid status'});
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }).then(
+	else {
+		Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }).then(
 		// Success
-		() => {
+			() => {
 			// Reload page
-			res.send(`State Updated to: ${req.body.state}`);
-			res.end();
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(`State Updated to: ${req.body.state}`);
+				res.end();
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // change ticket priority
-app.post('/ticket/priority', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(req.session.user.permission_level !== 'Manager') throw new Error('insufficient permissions');
-	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('invalid priority');
-	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }).then(
+app.post('/ticket/priority', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permission'});
+	else if(!['Low', 'Medium', 'High', ''].includes(req.body.priority))
+		res.status(400).json({error: 'invalid priority'});
+
+	else {
+		Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }).then(
 		// Success
-		() => {
+			() => {
 			// Reload page
-			res.send(`Priority Updated to: ${req.body.priority}`);
-			res.end();
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(`Priority Updated to: ${req.body.priority}`);
+				res.end();
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // add new comment
-app.post(['/ticket/edit/:ticket_id', '/ticket/:ticket_id'], (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!req.params.ticket_id) throw new Error('no ticket ID');
-	if(!req.body.comment) throw new Error('no comment text');
-	
-	const newComment = new Comment({
-		user_id: req.session.user._id,
-		ticket_id: req.params.ticket_id,
-		text: req.body.comment
-	});
-	newComment.save().then(
+app.post(['/ticket/edit/:ticket_id', '/ticket/:ticket_id'], (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.json({error: 'not logged in'});
+	else if(!req.params.ticket_id) 
+		res.status(400).json({error: 'no ticket ID'});
+	else if(!req.body.comment) 
+		res.status(400).json({error: 'no comment text'});
+
+	else {
+		const newComment = new Comment({
+			user_id: req.session.user._id,
+			ticket_id: req.params.ticket_id,
+			text: req.body.comment
+		});
+		newComment.save().then(
 		// Success
-		() => {
-			Ticket.findOneAndUpdate({_id: req.params.ticket_id}, {updated: Date.now()}, {timestamps: false}).exec();
-			res.redirect(`/ticket/${req.params.ticket_id}`);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+			() => {
+				Ticket.findOneAndUpdate({_id: req.params.ticket_id}, {updated: Date.now()}, {timestamps: false}).exec();
+				res.redirect(`/ticket/${req.params.ticket_id}`);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 
 // search for ticket
-app.post('/ticket', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/ticket', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
+	else {
 	// Search for tickets matching filters
-	Ticket.find(req.body).then(
+		Ticket.find(req.body).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 
 // Fetch tickets related to user ID
-app.post('/user-tickets', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/user-tickets', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
+	else {
 	// Search for tickets matching filters
-	Ticket.find().or([{ creator_id: req.body._id}, {assignee_id: req.body._id }]).then(
+		Ticket.find().or([{ creator_id: req.body._id}, {assignee_id: req.body._id }]).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 // Search for ticket by text match
-app.post('/search', (req, res, next) => {
-	if(req.session.loggedin) {
+app.post('/search', (req, res) => {
+	if(!req.session.loggedin || !req.session.user)
+		res.status(400).json({error: 'not logged in'});
+
+	else {
 		Ticket.find({ $text: { $search: req.query.query } }).then(
-			// Success
+		// Success
 			(doc) => {
 				res.send(doc);
 			},
 			// Fail
 			(err) => {
-				next(err);
+				res.status(400).json({error: err});
 			}
 		);
 	}
-	else res.redirect('/login');
 });
 
 //	DEPARTMENTS
 // search for department
-app.post('/department', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/department', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
+	else {
 	// Search for departments matching filters
-	Department.find(req.body).then(
+		Department.find(req.body).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 
 //	COMMENTS
 // search for comments
-app.post('/comment', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
+app.post('/comment', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
 
+	else {
 	// Search for comments matching filters
-	Comment.find(req.body).then(
+		Comment.find(req.body).then(
 		// Success
-		(doc) => {
+			(doc) => {
 			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
 });
 
 

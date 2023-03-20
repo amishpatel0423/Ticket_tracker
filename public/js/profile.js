@@ -41,7 +41,6 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 				'Content-Type': 'application/json'
 			},
 		}).then(r => r.json()).then(r => {
-			console.log(r);
 			if(r.isManager) isManager(response[0].department_id);
 		});
 

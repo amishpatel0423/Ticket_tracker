@@ -18,9 +18,9 @@ function login() {
 	}).then(response => {
 		// Handle errors
 		if(!response.ok) {
-			(response.text()).then(response => {
+			(response.json()).then(response => {
 				document.getElementById('error-box').style.visibility = 'visible';
-				document.getElementById('error').innerHTML = response;
+				document.getElementById('error').innerHTML = response['error'];
 			});
 		}
 		// Redirect logged in user

@@ -310,7 +310,7 @@ app.post('/ticket/department', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 	if(!req.body.department_id) throw new Error('No department id');
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }, { upsert: true }).then(
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }).then(
 		// Success
 		() => {
 			// Reload page
@@ -328,7 +328,7 @@ app.post('/ticket/assignee', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 	if(!req.body.assignee_id) req.body.assignee_id = null;
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }, { upsert: true }).then(
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }).then(
 		// Success
 		() => {
 			// Reload page
@@ -346,7 +346,7 @@ app.post('/ticket/status', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('No valid status');
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }, { upsert: true }).then(
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }).then(
 		// Success
 		() => {
 			// Reload page
@@ -364,7 +364,7 @@ app.post('/ticket/priority', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
 	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('No valid priority');
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }, { upsert: true }).then(
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }).then(
 		// Success
 		() => {
 			// Reload page
@@ -390,7 +390,10 @@ app.post(['/ticket/edit/:ticket_id', '/ticket/:ticket_id'], (req, res, next) => 
 	});
 	newComment.save().then(
 		// Success
-		() => res.redirect(`/ticket/${req.params.ticket_id}`),
+		() => {
+			Ticket.findOneAndUpdate({_id: req.params.ticket_id}, {updated: Date.now()}, {timestamps: false}).exec();
+			res.redirect(`/ticket/${req.params.ticket_id}`);
+		},
 		// Fail
 		(err) => {
 			next(err);

@@ -8,44 +8,37 @@ const departmentSchema = new Schema({
 	}
 });
 
-const ticketSchema = new Schema({
-	title: String,
-	desc: String,
-	date: {
-		type: Date,
-		default: Date.now(),
-		required: true
-	},
-	updated: {
-		type: Date,
-		default: Date.now(),
-		required: true
-	},
-	department_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'Department'
-	},
-	creator_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User',
-		required: true
-	},
-	assignee_id: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User'
-	},
-	state: {
-		type: String,
-		enum: ['Pending', 'Closed', 'In Progress', 'Complete'],
-		default: 'Pending',
-		required: true
-	},
-	priority: {
-		type: String,
-		enum: ['Low', 'Medium', 'High', ''],
-		default: '',
-	}
-});
+const ticketSchema = new Schema(
+	{
+		title: String,
+		desc: String,
+		department_id: {
+			type: mongoose.Types.ObjectId,
+			ref: 'Department'
+		},
+		creator_id: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User',
+			required: true
+		},
+		assignee_id: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User'
+		},
+		state: {
+			type: String,
+			enum: ['Pending', 'Closed', 'In Progress', 'Complete'],
+			default: 'Pending',
+			required: true
+		},
+		priority: {
+			type: String,
+			enum: ['Low', 'Medium', 'High', ''],
+			default: '',
+		}},
+	{ timestamps: { createdAt: 'date', updatedAt: 'updated'} }
+);
+
 ticketSchema.index({'$**': 'text'});
 
 const userSchema = new Schema({

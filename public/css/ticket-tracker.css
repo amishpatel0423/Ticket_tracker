@@ -955,3 +955,11 @@ body {
   background-color: #ffdede;
   display: table;
 }
+
+.success-message {
+  margin-bottom: 10px;
+  padding: 10px;
+  min-width: 20%;
+  background-color: #deffe0;
+  display: table;
+}

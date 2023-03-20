@@ -106,3 +106,32 @@ function searchStatus(sel) {
 	}
 	);
 }
+
+function addDepartment(e, sel) {
+	if(e.keyCode === 13) {
+		let selection = sel.value;
+		fetch(window.location.origin + '/department/create', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({name: selection})
+		}).then(response => {
+			// Handle errors
+			if(!response.ok) {
+				(response.json()).then(response => {
+					document.getElementById('success-box').style.display = 'none';
+					document.getElementById('error-box').style.display = 'table';
+					document.getElementById('error').innerHTML = 'Error: name already in use';
+				});
+			}
+			// Confirm added department
+			else if (response.status === 200) {
+				document.getElementById('error-box').style.display = 'none';
+				document.getElementById('success-box').style.display = 'table';
+				document.getElementById('success').innerHTML = `Added department ${selection}`;
+			}
+		});
+	}
+}

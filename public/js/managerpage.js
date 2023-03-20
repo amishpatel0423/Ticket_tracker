@@ -159,7 +159,7 @@ function updateDepartment(sel) {
 			department_id: selection,
 			_id: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
 		})
-	}).then(response => response.text()).then(response => {
+	}).then(response => response.json()).then(response => {
 		assigneeOptions(selection);
 		console.log(response);
 	});
@@ -178,7 +178,7 @@ function updateAssignee(sel) {
 			assignee_id: selection,
 			_id: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
 		})
-	}).then(response => response.text()).then(response => {
+	}).then(response => response.json()).then(response => {
 		console.log(response);
 	});
 }
@@ -196,7 +196,7 @@ function updateStatus(sel ){
 			state: selection,
 			_id: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
 		})
-	}).then(response => response.text()).then(response => {
+	}).then(response => response.json()).then(response => {
 		console.log(response);
 	});
 }
@@ -214,7 +214,7 @@ function updatePriority(sel) {
 			priority: selection,
 			_id: window.location.href.split('/').pop() || window.href.split('/').pop().pop()
 		})
-	}).then(response => response.text()).then(response => {
+	}).then(response => response.json()).then(response => {
 		console.log(response);
 	});
 }

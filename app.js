@@ -502,6 +502,32 @@ app.post('/search', (req, res) => {
 });
 
 //	DEPARTMENTS
+// create new department
+app.post('/department/create', (req, res) => {
+	if(!req.session.loggedin || !req.session.user) 
+		res.status(400).json({error: 'not logged in'});
+	else if(req.session.user.permission_level !== 'Manager') 
+		res.status(400).json({error: 'insufficient permissions'});
+	else if(!req.body.name) 
+		res.status(400).json({error: 'invalid department name'});
+		
+	else {
+		const newDepartment = new Department({
+			name: req.body.name
+		});
+		newDepartment.save().then(
+		// Success
+			(doc) => {
+			// Send fetched data
+				res.send(doc);
+			},
+			// Fail
+			(err) => {
+				res.status(400).json({error: err});
+			}
+		);
+	}
+});
 // search for department
 app.post('/department', (req, res) => {
 	if(!req.session.loggedin || !req.session.user) 

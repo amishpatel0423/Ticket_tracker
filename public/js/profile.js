@@ -164,7 +164,7 @@ function uploadImage() {
 			}).then(response => {
 				// Handle errors
 				if(!response.ok) {
-					(response.text()).then(response => {
+					(response.json()).then(response => {
 						document.getElementById('error-box').style.visibility = 'visible';
 						document.getElementById('error').innerHTML = response;
 					});
@@ -239,7 +239,7 @@ function updateDepartment(sel) {
 	}).then(response => {
 		// Error if error
 		if(!response.ok) {
-			(response.text()).then(response => {
+			(response.json()).then(response => {
 				document.getElementById('error-box').style.visibility = 'visible';
 				document.getElementById('error').innerHTML = response;
 			});

@@ -48,13 +48,13 @@
       <form id="email-form" name="email-form" data-name="Email Form" method="post" action="/signup">
         <h1 class="heading">Sign Up</h1>
         <label for="name" class="field-label">Full Name</label>
-        <input type="text" class="w-input" maxlength="256" name="uname" data-name="Name" placeholder="" id="uname">
+        <input type="text" class="w-input" maxlength="256" name="uname" data-name="Name" id="uname" required>
         <label for="email" class="field-label-2">Email Address</label>
-        <input type="text" class="w-input" maxlength="256" name="email" data-name="Name 2" placeholder="" id="email">
+        <input type="text" class="w-input" maxlength="256" name="email" data-name="Name 2" id="email" pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}" required>
         <label for="field" class="field-label-3">Password</label>
-        <input type="text" class="w-input" maxlength="256" name="upass" data-name="Field" placeholder="Example Text" id="upass" required="">
+        <input type="password" class="w-input" maxlength="256" name="upass" data-name="Field" id="upass" required>
         <label for="field-2" class="field-label-4">Re - Password</label>
-        <input type="text" class="w-input" maxlength="256" name="field-2" data-name="Field 2" placeholder="Example Text" id="field-2" required="">
+        <input type="password" class="w-input" maxlength="256" name="field-2" data-name="Field 2" id="field-2" required>
         <input type="submit" value="Submit" data-wait="Please wait..." class="submit-button-2 w-button">
         <input type="submit" value="Cancel" data-wait="Please wait..." class="submit-button w-button">
       </form>

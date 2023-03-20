@@ -50,9 +50,9 @@
       <form id="email-form" name="email-form" data-name="Email Form" method="post" onsubmit="login()">
         <h1 class="heading">Sign In</h1>
         <label for="name" class="field-label">Email Address</label>
-        <input type="text" class="w-input" maxlength="256" name="email" data-name="Name" placeholder="" id="email">
+        <input type="text" class="w-input" maxlength="256" name="email" data-name="Name" placeholder="" id="email" pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}" required>
         <label for="email" class="field-label-2">Password</label>
-        <input type="text" class="w-input" maxlength="256" name="upass" data-name="Name 2" placeholder="" id="upass">
+        <input type="password" class="w-input" maxlength="256" name="upass" data-name="Name 2" placeholder="" id="upass" required>
         <input type="submit" value="Submit" data-wait="Please wait..." class="submit-button-2 w-button">
       </form>
       <div id="error-box" style="visibility:hidden" class="w-form-fail">

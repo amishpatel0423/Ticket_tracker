@@ -21,7 +21,7 @@ app.use(minify()); // minify css & js
 app.use(session({
 	secret: process.env.AUTH_SECRET,
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: false
 }));
 app.use(express.urlencoded({ extended: true })); // Support HTML forms
 app.use(express.json({limit: '20kb'})); // Support POST request JSON bodies
@@ -130,7 +130,7 @@ app.post('/signup', (req, res) => {
 	const {email, uname, upass} = req.body;
 	
 	// Server-side data verification
-	if(email.length <= 0)
+	if(email.length <= 0 || !(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/).test(email))
 		res.status(400).json({error: 'invalid email'});
 	else if(uname.length <= 0) 
 		res.status(400).json({error: 'invalid name'});

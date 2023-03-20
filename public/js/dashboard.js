@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // @ts-nocheck
 /* eslint-disable no-undef */
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {

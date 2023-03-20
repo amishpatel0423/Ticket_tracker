@@ -94,14 +94,14 @@ app.get('/ticket/create',(req,res)=>{
 	else res.redirect('/login');
 });
 // edit
-app.get('/ticket/edit',(req,res)=>{
+app.get('/ticket/edit/:ticket',(req,res)=>{
 	if(req.session.loggedin) {
 		if(req.session.user.permission_level === 'Manager')
 		{
 			res.sendFile(__dirname + '/pages/ticket-edit.html');
 		}
 		else{
-			res.redirect('/ticket');
+			res.redirect(`/ticket/${req.params.ticket}`);
 		}
 	}
 	else res.redirect('/login');
@@ -109,7 +109,13 @@ app.get('/ticket/edit',(req,res)=>{
 // details
 app.get('/ticket/:ticket',(req,res)=>{
 	if(req.session.loggedin) {
-		res.sendFile(__dirname + '/pages/ticket-details.html');
+		if(!(req.session.user.permission_level === 'Manager'))
+		{
+			res.sendFile(__dirname + '/pages/ticket-details.html');
+		}
+		else{
+			res.redirect(`/ticket/edit/${req.params.ticket}`);
+		}
 	}
 	else res.redirect('/login');
 });
@@ -299,16 +305,34 @@ app.post('/ticket/create', (req, res, next) => {
 		}
 	);
 });
-// change ticket priority
-app.post('/ticket/prority', (req, res, next) => {
+// change ticket department 
+app.post('/ticket/department', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('No priority given');
+	if(!req.body.department_id) throw new Error('No department id');
 	
-	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.priority }, { upsert: true }).then(
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { department_id: req.body.department_id, assignee_id: null }, { upsert: true }).then(
 		// Success
 		() => {
 			// Reload page
-			res.send(`Priority Updated to: ${req.body.priority}`);
+			res.send(`Department_Id Updated to: ${req.body.department_id}`);
+			res.end();
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+// change ticket assignee 
+app.post('/ticket/assignee', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!req.body.assignee_id) req.body.assignee_id = null;
+	
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { assignee_id: req.body.assignee_id }, { upsert: true }).then(
+		// Success
+		() => {
+			// Reload page
+			res.send(`Assignee_Id Updated to: ${req.body.assignee_id}`);
 			res.end();
 		},
 		// Fail
@@ -319,10 +343,8 @@ app.post('/ticket/prority', (req, res, next) => {
 });
 // change ticket status 
 app.post('/ticket/status', (req, res, next) => {
-
 	if(!req.session.loggedin) throw new Error('not logged in');
-
-	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('No status');
+	if(!['Pending', 'Closed', 'In Progress', 'Complete'].includes(req.body.state)) throw new Error('No valid status');
 	
 	Ticket.findOneAndUpdate({ _id: req.body._id}, { state: req.body.state }, { upsert: true }).then(
 		// Success
@@ -337,6 +359,63 @@ app.post('/ticket/status', (req, res, next) => {
 		}
 	);
 });
+// change ticket priority
+app.post('/ticket/priority', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!['Low', 'Medium', 'High', ''].includes(req.body.priority)) throw new Error('No valid priority');
+	
+	Ticket.findOneAndUpdate({ _id: req.body._id}, { priority: req.body.priority }, { upsert: true }).then(
+		// Success
+		() => {
+			// Reload page
+			res.send(`Priority Updated to: ${req.body.priority}`);
+			res.end();
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+// add new comment
+app.post(['/ticket/edit/:ticket_id', '/ticket/:ticket_id'], (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+	if(!req.params.ticket_id) throw new Error('no ticket ID');
+	if(!req.body.comment) throw new Error('no comment text');
+	
+	const newComment = new Comment({
+		user_id: req.session.user._id,
+		ticket_id: req.params.ticket_id,
+		text: req.body.comment
+	});
+	newComment.save().then(
+		// Success
+		() => res.redirect(`/ticket/${req.params.ticket_id}`),
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
+// search for ticket
+app.post('/ticket', (req, res, next) => {
+	if(!req.session.loggedin) throw new Error('not logged in');
+
+	// Search for tickets matching filters
+	Ticket.find(req.body).then(
+		// Success
+		(doc) => {
+			// Send fetched data
+			res.send(doc);
+		},
+		// Fail
+		(err) => {
+			next(err);
+		}
+	);
+});
+
 // Fetch tickets related to user ID
 app.post('/user-tickets', (req, res, next) => {
 	if(!req.session.loggedin) throw new Error('not logged in');
@@ -370,24 +449,6 @@ app.post('/search', (req, res, next) => {
 	}
 	else res.redirect('/login');
 });
-// search for ticket
-app.post('/ticket', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-
-	// Search for tickets matching filters
-	Ticket.find(req.body).then(
-		// Success
-		(doc) => {
-			// Send fetched data
-			res.send(doc);
-		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
-});
-
 
 //	DEPARTMENTS
 // search for department
@@ -420,26 +481,6 @@ app.post('/comment', (req, res, next) => {
 			// Send fetched data
 			res.send(doc);
 		},
-		// Fail
-		(err) => {
-			next(err);
-		}
-	);
-});
-// add new comment
-app.post('/ticket/:ticket_id', (req, res, next) => {
-	if(!req.session.loggedin) throw new Error('not logged in');
-	if(!req.params.ticket_id) throw new Error('no ticket ID');
-	if(!req.body.comment) throw new Error('no comment text');
-	
-	const newComment = new Comment({
-		user_id: req.session.user._id,
-		ticket_id: req.params.ticket_id,
-		text: req.body.comment
-	});
-	newComment.save().then(
-		// Success
-		() => res.redirect(`/ticket/${req.params.ticket_id}`),
 		// Fail
 		(err) => {
 			next(err);

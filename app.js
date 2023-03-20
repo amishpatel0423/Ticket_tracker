@@ -10,19 +10,6 @@ import compression from 'compression';
 import minify from 'express-minify';
 import session from 'express-session';
 
-// === Connect to database ===
-const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/${process.env.ENVIRONMENT}?retryWrites=true&w=majority`;
-await mongoose.connect(uri).then(
-	// Promise fulfilled
-	() => {
-		console.info('mongoose connected successfully');
-	},
-	// Promise rejected
-	(err) => {
-		console.error('mongoose failed to connect:\n', err);
-	}
-);
-
 // === App config ===
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -49,6 +36,9 @@ app.use(express.static(__dirname + '/public/')); // adjust to express.static(__d
 // === Serve webpages / GET requests ===
 app.get('/', (req, res) => {
 	res.redirect('/login');
+});
+app.get('/status', (req, res) => {
+	res.sendStatus(200);
 });
 
 //	PROFILE / AUTH
@@ -496,6 +486,20 @@ app.post('/comment', (req, res, next) => {
 });
 
 
-// === Start server ===
-app.listen(port);
-console.log(`running at http://localhost:${port}`);
+
+// === Connect to database ===
+const uri = `mongodb+srv://user0:${process.env.MONGO_KEY}@cluster0.tpyq1gp.mongodb.net/${process.env.ENVIRONMENT}?retryWrites=true&w=majority`;
+await mongoose.connect(uri).then(
+	// Promise fulfilled
+	() => {
+		console.info('database connected');
+
+		// === Start server ===
+		app.listen(port);
+		console.log(`running at http://localhost:${port}`);
+	},
+	// Promise rejected
+	(err) => {
+		console.error('database failed to connect:\n', err);
+	}
+);

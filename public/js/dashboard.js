@@ -2,6 +2,19 @@
 // @ts-nocheck
 /* eslint-disable no-undef */
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
+	// Allow managers to change user department
+	fetch(window.location.origin + '/isManager', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+	}).then(r => r.json()).then(r => {
+		if(!r.isManager) {
+			document.getElementById('department-add').style.visibility = 'hidden';
+		}
+	});
+
 	// Fetch all tickets
 	fetch(window.location.origin + '/ticket', {
 		method: 'POST',

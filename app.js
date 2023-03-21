@@ -9,6 +9,7 @@ import express from 'express';
 import compression from 'compression';
 import minify from 'express-minify';
 import session from 'express-session';
+import bcrypt from 'bcrypt';
 
 // === App config ===
 const __filename = fileURLToPath(import.meta.url);
@@ -138,51 +139,64 @@ app.post('/signup', (req, res) => {
 		res.status(400).json({error: 'invalid password'});
 
 	else {
-	// Create account
-		const newUser = new User({
-			email: email,
-			name: uname,
-			password: upass,
-			permission_level: 'User'
+		// Hash password
+		bcrypt.hash(upass, 10, (err, hash) => {
+			// Create account
+			const newUser = new User({
+				email: email,
+				name: uname,
+				password: hash,
+				permission_level: 'User'
+			});
+			newUser.save().then(
+				// Success
+				(doc) => {
+					// Authenticate the user
+					req.session.loggedin = true;
+					req.session.user = doc;
+					// Redurect to home page
+					res.redirect('/dashboard');
+				},
+				// Fail
+				(err) => {
+					// Error: email in use
+					if(err.message.includes('dup key'))
+						res.status(401).json({error: 'Email already in use! Please log in'});
+					res.status(400).json({error: err});
+				}
+			);
 		});
-		newUser.save().then(
-		// Success
-			(doc) => {
-			// Authenticate the user
-				req.session.loggedin = true;
-				req.session.user = doc;
-				// Redurect to home page
-				res.redirect('/dashboard');
-			},
-			// Fail
-			(err) => {
-			// Error: email in use
-				if(err.message.includes('dup key'))
-					res.status(401).json({error: 'Email already in use! Please log in'});
-				res.status(400).json({error: err});
-			}
-		);
 	}
 });
 // login user
 app.post('/login', function(req, res) {
 	const {email, upass} = req.body;
 	// Search for account
-	User.find({email: email, password: upass}).then(
+	User.find({email: email}).then(
 		// Success
 		(doc) => {
 			// Account exists
 			if(doc.length > 0) {
-				// Authenticate the user
-				req.session.loggedin = true;
-				req.session.user = doc[0];
-				// Redirect to home page
-				res.redirect('/dashboard');
-				res.end();
+				// Check password
+				bcrypt.compare(upass, doc[0].password, (err, result) => {
+					// Password matches
+					if(result) {
+						// Authenticate the user
+						req.session.loggedin = true;
+						req.session.user = doc[0];
+						// Redirect to home page
+						res.redirect('/dashboard');
+						res.end();
+					}
+					// Incorrect password
+					else{
+						res.status(401).json({error: 'Wrong password'});
+					}
+				});
 			}
 			// Account not found
 			else{
-				res.status(401).json({error: 'Invalid credentials'});
+				res.status(401).json({error: 'Account not found'});
 			}
 		},
 		// Fail
